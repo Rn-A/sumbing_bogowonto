@@ -8,7 +8,7 @@
     "dev:server": "tsx watch server/index.ts",
     "server": "npm run dev:server",
     "dev:all": "concurrently \"npm run dev\" \"npm run dev:server\"",
-    "build": "vite build",
+    "build": "prisma generate && vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
