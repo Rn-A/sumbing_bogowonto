@@ -1,0 +1,6 @@
+{
+  "name": "Basecamp Gunung Sumbing",
+  "description": "Portal Digital Resmi Basecamp Gunung Sumbing — Reservasi pendakian, informasi jalur, cuaca, dan layanan pendakian",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

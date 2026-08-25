@@ -1,0 +1,513 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+// =============================================
+// AUTH & USER MANAGEMENT
+// =============================================
+
+model User {
+  id            String   @id @default(cuid())
+  username      String   @unique @db.VarChar(50)
+  email         String   @unique @db.VarChar(255)
+  password      String   @db.VarChar(255)
+  nama_lengkap  String   @db.VarChar(100)
+  phone         String?  @db.VarChar(20)
+  avatar        String?  @db.VarChar(500)
+  role_id       String
+  is_active     Boolean  @default(true)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  role          Role     @relation(fields: [role_id], references: [id])
+  articles      Article[]
+  reviews       Review[]
+  bookings      Booking[]
+  activity_logs ActivityLog[]
+  notifications Notification[]
+
+  @@index([role_id])
+  @@map("users")
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique @db.VarChar(50)
+  description String?  @db.VarChar(255)
+  permissions Json?    // JSON array of permission strings
+  created_at  DateTime @default(now())
+
+  users       User[]
+
+  @@map("roles")
+}
+
+// =============================================
+// CONTENT: ARTICLES / BERITA
+// =============================================
+
+model ArticleCategory {
+  id              String    @id @default(cuid())
+  nama_kategori   String    @db.VarChar(100)
+  slug            String    @unique @db.VarChar(100)
+  icon            String?   @db.VarChar(50)
+  urutan          Int       @default(0)
+  created_at      DateTime  @default(now())
+
+  articles        Article[]
+
+  @@map("article_categories")
+}
+
+model Article {
+  id              String   @id @default(cuid())
+  author_id       String
+  category_id     String
+  judul           String   @db.VarChar(255)
+  slug            String   @unique @db.VarChar(255)
+  ringkasan       String?  @db.Text
+  konten          String   @db.LongText
+  foto_sampul     String?  @db.VarChar(500)
+  status          String   @default("Draft") @db.VarChar(20) // Draft, Terbit
+  is_featured     Boolean  @default(false)
+  views           Int      @default(0)
+  tanggal_terbit  DateTime?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  author          User     @relation(fields: [author_id], references: [id])
+  category        ArticleCategory @relation(fields: [category_id], references: [id])
+
+  @@index([author_id])
+  @@index([category_id])
+  @@index([slug])
+  @@map("articles")
+}
+
+// =============================================
+// GALLERY
+// =============================================
+
+model GalleryCategory {
+  id              String    @id @default(cuid())
+  nama_kategori   String    @db.VarChar(100)
+  slug            String    @unique @db.VarChar(100)
+  urutan          Int       @default(0)
+  created_at      DateTime  @default(now())
+
+  galleries       Gallery[]
+
+  @@map("gallery_categories")
+}
+
+model Gallery {
+  id              String   @id @default(cuid())
+  category_id     String
+  judul           String   @db.VarChar(255)
+  deskripsi       String?  @db.Text
+  url_media       String   @db.VarChar(500) // Image or video URL
+  media_type      String   @default("image") @db.VarChar(10) // image, video
+  is_featured     Boolean  @default(false)
+  urutan          Int      @default(0)
+  created_at      DateTime @default(now())
+
+  category        GalleryCategory @relation(fields: [category_id], references: [id])
+
+  @@index([category_id])
+  @@map("galleries")
+}
+
+// =============================================
+// ROUTES, SEGMENTS, POSTS (JALUR PENDAKIAN)
+// =============================================
+
+model Route {
+  id              String    @id @default(cuid())
+  nama_jalur      String    @db.VarChar(255)
+  slug            String    @unique @db.VarChar(255)
+  deskripsi       String?   @db.Text
+  tingkat_kesulitan String  @default("Sedang") @db.VarChar(50)
+  total_jarak_km  Float     @default(0)
+  estimasi_jam    Float     @default(0)
+  elevasi_start   Int       @default(0)
+  elevasi_puncak  Int       @default(0)
+  status          String    @default("Buka") @db.VarChar(20) // Buka, Tutup, Maintenance
+  foto_sampul     String?   @db.VarChar(500)
+  map_center_lat  Float?
+  map_center_lng  Float?
+  map_zoom        Int?      @default(13)
+  is_active       Boolean   @default(true)
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  segments        Segment[]
+  posts           Post[]
+  gpx_files       RouteGpx[]
+  booking_packages BookingPackage[]
+
+  @@map("routes")
+}
+
+model Segment {
+  id              String   @id @default(cuid())
+  route_id        String
+  nama_segmen     String   @db.VarChar(255)
+  deskripsi       String?  @db.Text
+  jarak_km        Float    @default(0)
+  estimasi_menit  Int      @default(0)
+  elevasi_naik    Int      @default(0)
+  elevasi_turun   Int      @default(0)
+  tingkat_kesulitan String @default("Sedang") @db.VarChar(50)
+  urutan          Int      @default(0)
+  created_at      DateTime @default(now())
+
+  route           Route    @relation(fields: [route_id], references: [id], onDelete: Cascade)
+
+  @@index([route_id])
+  @@map("segments")
+}
+
+model Post {
+  id              String   @id @default(cuid())
+  route_id        String
+  nama_pos        String   @db.VarChar(255)
+  deskripsi       String?  @db.Text
+  elevasi         Int      @default(0)
+  latitude        Float?
+  longitude       Float?
+  fasilitas       Json?    // JSON array: ["air", "shelter", "toilet"]
+  foto            String?  @db.VarChar(500)
+  urutan          Int      @default(0)
+  created_at      DateTime @default(now())
+
+  route           Route    @relation(fields: [route_id], references: [id], onDelete: Cascade)
+
+  @@index([route_id])
+  @@map("posts")
+}
+
+model RouteGpx {
+  id              String   @id @default(cuid())
+  route_id        String
+  nama_file       String   @db.VarChar(255)
+  file_url        String   @db.VarChar(500)
+  total_jarak_km  Float?
+  elevasi_gain    Int?
+  elevasi_loss    Int?
+  elevasi_min     Int?
+  elevasi_max     Int?
+  total_waypoints Int?
+  deskripsi       String?  @db.Text
+  download_count  Int      @default(0)
+  created_at      DateTime @default(now())
+
+  route           Route    @relation(fields: [route_id], references: [id], onDelete: Cascade)
+
+  @@index([route_id])
+  @@map("route_gpx")
+}
+
+// =============================================
+// WEATHER
+// =============================================
+
+model WeatherCache {
+  id              String   @id @default(cuid())
+  data            Json     // Full weather API response
+  source          String   @default("openweathermap") @db.VarChar(50)
+  fetched_at      DateTime @default(now())
+
+  @@map("weather_cache")
+}
+
+// =============================================
+// REVIEWS
+// =============================================
+
+model Review {
+  id              String   @id @default(cuid())
+  user_id         String?
+  nama            String   @db.VarChar(100)
+  email           String?  @db.VarChar(255)
+  rating          Int      @default(5) // 1-5
+  komentar        String   @db.Text
+  foto            String?  @db.VarChar(500)
+  is_approved     Boolean  @default(false)
+  is_featured     Boolean  @default(false)
+  created_at      DateTime @default(now())
+
+  user            User?    @relation(fields: [user_id], references: [id])
+
+  @@index([user_id])
+  @@map("reviews")
+}
+
+// =============================================
+// CATALOG: PRODUCTS, RENTALS
+// =============================================
+
+model ProductCategory {
+  id              String    @id @default(cuid())
+  nama_kategori   String    @db.VarChar(100)
+  slug            String    @unique @db.VarChar(100)
+  tipe            String    @default("produk") @db.VarChar(50) // produk, sewa, homestay, porter, guide, merchandise, warung, umkm
+  icon            String?   @db.VarChar(50)
+  urutan          Int       @default(0)
+  created_at      DateTime  @default(now())
+
+  products        Product[]
+
+  @@map("product_categories")
+}
+
+model Product {
+  id              String   @id @default(cuid())
+  category_id     String
+  nama_produk     String   @db.VarChar(255)
+  slug            String   @unique @db.VarChar(255)
+  deskripsi       String?  @db.Text
+  harga           Int      @default(0)
+  harga_diskon    Int?
+  satuan          String?  @db.VarChar(50) // /malam, /hari, /orang, /trip
+  foto            String?  @db.VarChar(500)
+  foto_gallery    Json?    // JSON array of image URLs
+  stok            Int?
+  rating          Float?   @default(0)
+  is_available    Boolean  @default(true)
+  is_featured     Boolean  @default(false)
+  kontak_wa       String?  @db.VarChar(20)
+  lokasi          String?  @db.VarChar(255)
+  fasilitas       Json?    // JSON array of facility strings
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  category        ProductCategory @relation(fields: [category_id], references: [id])
+
+  @@index([category_id])
+  @@map("products")
+}
+
+model Rental {
+  id              String   @id @default(cuid())
+  booking_id      String
+  product_id      String
+  jumlah          Int      @default(1)
+  harga_satuan    Int      @default(0)
+  total_harga     Int      @default(0)
+  tanggal_sewa    DateTime
+  tanggal_kembali DateTime
+  status          String   @default("Disewa") @db.VarChar(20) // Disewa, Dikembalikan, Hilang
+  created_at      DateTime @default(now())
+
+  booking         Booking  @relation(fields: [booking_id], references: [id], onDelete: Cascade)
+
+  @@index([booking_id])
+  @@index([product_id])
+  @@map("rentals")
+}
+
+// =============================================
+// BOOKING / RESERVASI
+// =============================================
+
+model BookingPackage {
+  id              String    @id @default(cuid())
+  route_id        String
+  nama_paket      String    @db.VarChar(255)
+  slug            String    @unique @db.VarChar(255)
+  deskripsi       String?   @db.Text
+  harga_per_orang Int       @default(0)
+  min_peserta     Int       @default(1)
+  max_peserta     Int       @default(20)
+  durasi_hari     Int       @default(2)
+  include         Json?     // JSON array: ["guide", "porter", "tenda", ...]
+  exclude         Json?     // JSON array
+  foto            String?   @db.VarChar(500)
+  is_available    Boolean   @default(true)
+  is_featured     Boolean   @default(false)
+  urutan          Int       @default(0)
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  route           Route     @relation(fields: [route_id], references: [id])
+  bookings        Booking[]
+
+  @@index([route_id])
+  @@map("booking_packages")
+}
+
+model Booking {
+  id              String    @id @default(cuid())
+  user_id         String?
+  package_id      String
+  kode_booking    String    @unique @db.VarChar(20)
+  nama_ketua      String    @db.VarChar(255)
+  email           String    @db.VarChar(255)
+  no_hp           String    @db.VarChar(20)
+  alamat          String?   @db.Text
+  tanggal_naik    DateTime
+  tanggal_turun   DateTime
+  jumlah_peserta  Int       @default(1)
+  total_harga     Int       @default(0)
+  catatan         String?   @db.Text
+  status          String    @default("Pending") @db.VarChar(30) // Pending, Confirmed, Paid, CheckedIn, CheckedOut, Cancelled, Expired
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  user            User?     @relation(fields: [user_id], references: [id])
+  package         BookingPackage @relation(fields: [package_id], references: [id])
+  members         BookingMember[]
+  payment         Payment?
+  ticket          Ticket?
+  rentals         Rental[]
+
+  @@index([user_id])
+  @@index([package_id])
+  @@index([kode_booking])
+  @@map("bookings")
+}
+
+model BookingMember {
+  id              String   @id @default(cuid())
+  booking_id      String
+  nama_lengkap    String   @db.VarChar(255)
+  nik             String?  @db.VarChar(20)
+  jenis_kelamin   String?  @db.VarChar(10)
+  umur            Int?
+  no_hp           String?  @db.VarChar(20)
+  foto_identitas  String?  @db.VarChar(500) // URL to uploaded ID photo
+  is_ketua        Boolean  @default(false)
+  created_at      DateTime @default(now())
+
+  booking         Booking  @relation(fields: [booking_id], references: [id], onDelete: Cascade)
+
+  @@index([booking_id])
+  @@map("booking_members")
+}
+
+// =============================================
+// PAYMENT
+// =============================================
+
+model Payment {
+  id              String   @id @default(cuid())
+  booking_id      String   @unique
+  metode          String?  @db.VarChar(50) // QRIS, VA_BCA, VA_BRI, Gopay, etc.
+  gateway         String?  @db.VarChar(50) // midtrans, xendit, tripay
+  gateway_trx_id  String?  @db.VarChar(100)
+  jumlah          Int      @default(0)
+  biaya_admin     Int      @default(0)
+  total           Int      @default(0)
+  status          String   @default("Unpaid") @db.VarChar(20) // Unpaid, Pending, Paid, Failed, Refunded, Expired
+  paid_at         DateTime?
+  expired_at      DateTime?
+  snap_token      String?  @db.VarChar(255)
+  snap_url        String?  @db.VarChar(500)
+  raw_response    Json?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  booking         Booking  @relation(fields: [booking_id], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+// =============================================
+// TICKETS (QR)
+// =============================================
+
+model Ticket {
+  id              String    @id @default(cuid())
+  booking_id      String    @unique
+  kode_tiket      String    @unique @db.VarChar(30)
+  qr_code_url     String?   @db.VarChar(500)
+  checked_in_at   DateTime?
+  checked_out_at  DateTime?
+  checked_in_by   String?   @db.VarChar(100)
+  checked_out_by  String?   @db.VarChar(100)
+  status          String    @default("Active") @db.VarChar(20) // Active, Used, Expired, Cancelled
+  created_at      DateTime  @default(now())
+
+  booking         Booking   @relation(fields: [booking_id], references: [id], onDelete: Cascade)
+
+  @@map("tickets")
+}
+
+// =============================================
+// NOTIFICATIONS
+// =============================================
+
+model Notification {
+  id              String   @id @default(cuid())
+  user_id         String?
+  judul           String   @db.VarChar(255)
+  pesan           String   @db.Text
+  tipe            String   @default("info") @db.VarChar(20) // info, success, warning, error
+  is_read         Boolean  @default(false)
+  link            String?  @db.VarChar(500)
+  created_at      DateTime @default(now())
+
+  user            User?    @relation(fields: [user_id], references: [id])
+
+  @@index([user_id])
+  @@map("notifications")
+}
+
+// =============================================
+// CONTACTS / PESAN MASUK
+// =============================================
+
+model Contact {
+  id              String   @id @default(cuid())
+  nama            String   @db.VarChar(100)
+  email           String   @db.VarChar(255)
+  subjek          String?  @db.VarChar(255)
+  pesan           String   @db.Text
+  is_read         Boolean  @default(false)
+  is_replied      Boolean  @default(false)
+  created_at      DateTime @default(now())
+
+  @@map("contacts")
+}
+
+// =============================================
+// SETTINGS
+// =============================================
+
+model Setting {
+  id              String   @id @default(cuid())
+  key             String   @unique @db.VarChar(100)
+  value           String   @db.LongText
+  group           String   @default("general") @db.VarChar(50)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  @@map("settings")
+}
+
+// =============================================
+// ACTIVITY LOG / AUDIT TRAIL
+// =============================================
+
+model ActivityLog {
+  id              String   @id @default(cuid())
+  user_id         String?
+  action          String   @db.VarChar(100) // CREATE, UPDATE, DELETE, LOGIN, LOGOUT, etc.
+  target_type     String?  @db.VarChar(50)  // booking, article, product, etc.
+  target_id       String?  @db.VarChar(100)
+  details         Json?
+  ip_address      String?  @db.VarChar(50)
+  created_at      DateTime @default(now())
+
+  user            User?    @relation(fields: [user_id], references: [id])
+
+  @@index([user_id])
+  @@index([created_at])
+  @@map("activity_logs")
+}

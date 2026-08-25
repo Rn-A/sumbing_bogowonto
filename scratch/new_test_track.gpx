@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="User Test Track">
+  <trk>
+    <name>New Uploaded Track 2026</name>
+    <trkseg>
+      <trkpt lat="-7.3999" lon="110.0329"><ele>1537</ele></trkpt>
+      <trkpt lat="-7.3980" lon="110.0340"><ele>1650</ele></trkpt>
+      <trkpt lat="-7.3960" lon="110.0350"><ele>1800</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

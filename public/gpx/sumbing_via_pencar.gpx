@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Basecamp Bogowonto Sumbing">
+  <trk>
+    <name>Jalur Sumbing via Pencar (Bogowonto)</name>
+    <trkseg>
+      <trkpt lat="-7.3888" lon="110.0621"><ele>1540</ele></trkpt>
+      <trkpt lat="-7.3878" lon="110.0625"><ele>1610</ele></trkpt>
+      <trkpt lat="-7.3865" lon="110.0630"><ele>1700</ele></trkpt>
+      <trkpt lat="-7.3852" lon="110.0635"><ele>1790</ele></trkpt>
+      <trkpt lat="-7.3840" lon="110.0640"><ele>1900</ele></trkpt>
+      <trkpt lat="-7.3825" lon="110.0646"><ele>2010</ele></trkpt>
+      <trkpt lat="-7.3811" lon="110.0652"><ele>2100</ele></trkpt>
+      <trkpt lat="-7.3799" lon="110.0661"><ele>2300</ele></trkpt>
+      <trkpt lat="-7.3782" lon="110.0674"><ele>2610</ele></trkpt>
+      <trkpt lat="-7.3768" lon="110.0682"><ele>2850</ele></trkpt>
+      <trkpt lat="-7.3755" lon="110.0691"><ele>3060</ele></trkpt>
+      <trkpt lat="-7.3735" lon="110.0710"><ele>3200</ele></trkpt>
+      <trkpt lat="-7.3720" lon="110.0725"><ele>3371</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>
