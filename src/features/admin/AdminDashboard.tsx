@@ -27,6 +27,7 @@ import {
 
 import HomeCmsManager from './HomeCmsManager';
 import CatalogCmsManager from './CatalogCmsManager';
+import logoBc from '../../assets/logo_bc.png';
 
 function CameraScannerView({ 
   onScanSuccess, 
@@ -897,8 +898,8 @@ export default function AdminDashboard() {
         {/* Top Header */}
         <div className="p-6 border-b border-[#26261f] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#0D5C3A] flex items-center justify-center text-white font-black shadow-sm">
-              ▲
+            <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center shadow-sm overflow-hidden">
+              <img src={logoBc} alt="Logo Basecamp Bogowonto" className="w-full h-full object-contain" />
             </div>
             <div>
               <p className="font-black text-sm uppercase tracking-wide text-white">Console Admin</p>

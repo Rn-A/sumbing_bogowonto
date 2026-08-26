@@ -4,6 +4,7 @@ import {
   Facebook, Instagram, Youtube, Twitter,
   ChevronRight, Heart
 } from 'lucide-react';
+import logoBc from '../../assets/logo_bc.png';
 
 const QUICK_LINKS = [
   { path: '/', label: 'Home' },
@@ -50,8 +51,8 @@ export default function Footer() {
           {/* Column 1: Brand & Description */}
           <div className="lg:col-span-1">
             <Link to="/" className="flex items-center gap-2.5 mb-5 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0D5C3A] to-emerald-700 flex items-center justify-center shadow-lg group-hover:shadow-emerald-900/50 transition-shadow">
-                <Mountain className="w-5 h-5 text-white" />
+              <div className="w-11 h-11 rounded-xl bg-white p-1 flex items-center justify-center shadow-lg border border-white/10 group-hover:shadow-emerald-900/50 transition-all overflow-hidden">
+                <img src={logoBc} alt="Logo Basecamp Bogowonto" className="w-full h-full object-contain" />
               </div>
               <div className="flex flex-col leading-tight">
                 <span className="font-display font-extrabold text-white text-sm">

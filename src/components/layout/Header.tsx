@@ -6,6 +6,7 @@ import {
   Home, User, ShoppingBag, Newspaper, CalendarCheck, 
   Image, Phone, Mail, LayoutDashboard, LogOut
 } from 'lucide-react';
+import logoBc from '../../assets/logo_bc.png';
 
 interface HeaderProps {
   isAdminLoggedIn: boolean;
@@ -94,8 +95,8 @@ export default function Header({ isAdminLoggedIn, onLogout, onOpenLogin }: Heade
           <div className="container-app h-full flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2.5 group">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#0D5C3A] to-[#0D5C3A] flex items-center justify-center shadow-lg group-hover:shadow-[#0D5C3A]/30 transition-shadow">
-                <Mountain className="w-5 h-5 text-white" />
+              <div className="w-10 h-10 rounded-xl bg-[#FAF8F5] p-1 flex items-center justify-center shadow-md border border-[#e7e5e4] group-hover:shadow-lg transition-all overflow-hidden">
+                <img src={logoBc} alt="Logo Basecamp Bogowonto" className="w-full h-full object-contain" />
               </div>
               <div className="flex flex-col leading-tight">
                 <span className={`font-display font-extrabold text-sm tracking-tight ${textColor} transition-colors`}>
@@ -222,8 +223,8 @@ export default function Header({ isAdminLoggedIn, onLogout, onOpenLogin }: Heade
               {/* Mobile header */}
               <div className="flex items-center justify-between p-4 border-b border-[#e7e5e4] dark:border-[#e7e5e4]">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0D5C3A] to-[#0D5C3A] flex items-center justify-center">
-                    <Mountain className="w-4 h-4 text-white" />
+                  <div className="w-9 h-9 rounded-xl bg-white p-1 flex items-center justify-center shadow-sm border border-[#e7e5e4] overflow-hidden">
+                    <img src={logoBc} alt="Logo Basecamp Bogowonto" className="w-full h-full object-contain" />
                   </div>
                   <span className="font-display font-extrabold text-sm text-[#050505] dark:text-[#050505]">
                     Bogowonto
