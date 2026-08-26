@@ -33,14 +33,14 @@ const DEFAULT_HERO_SLIDES = [
 ];
 
 const DEFAULT_ABOUT = {
-  badge: 'TENTANG MUNCAK.ID',
-  title: 'Riset publik, untuk pendaki publik.',
-  paragraph1: 'muncak.id merupakan aplikasi yang dirancang untuk membantu pendaki dengan memberikan panduan mendaki gunung maupun pegunungan yang komprehensif dan terstruktur, sehingga setiap langkah perjalanan dapat direncanakan dengan cermat.',
-  paragraph2: 'Selain itu, aplikasi ini menyajikan informasi terintegrasi bagi para pendaki yang menginginkan kemudahan dalam merencanakan pendakian gunung dan penjelajahan pegunungan di Indonesia dan luar negeri. Dengan akses ke berbagai informasi penting, pengguna dapat lebih siap dan percaya diri dalam menghadapi tantangan alam.',
+  badge: 'TENTANG BASECAMP BOGOWONTO',
+  title: 'Portal Pendakian Gunung Sumbing Via Pencar.',
+  paragraph1: 'Basecamp Bogowonto merupakan portal pelayanan dan informasi resmi pendakian Gunung Sumbing (3.371 mdpl) via jalur Pencar, Wonosobo. Kami menyediakan panduan pendakian yang komprehensif, aman, dan terstruktur untuk setiap pendaki.',
+  paragraph2: 'Melalui platform ini, Anda dapat mengakses informasi rute interaktif, registrasi SIMAKSI online, pemesanan homestay & perlengkapan, hingga pengunduhan file GPX demi kelancaran dan keselamatan petualangan Anda.',
   devLabel: 'PENGEMBANG',
-  devDesc: 'Pusat Pengembangan Teknologi Petualangan Tropis. Laboratorium Teknik Industri, Teknik Geologi dan Informatika Universitas Jenderal Soedirman.',
+  devDesc: 'Mahasiswa KKN UMP 2026 (Universitas Muhammadiyah Purwokerto)',
   contactLabel: 'KONTAK',
-  contactValue: 'laboratoriumindustri@unsoed.ac.id',
+  contactValue: 'basecampbogowonto@gmail.com',
   imgLeft: 'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=800&q=80',
   imgTopRight: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80',
   imgBottomRight: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80'
