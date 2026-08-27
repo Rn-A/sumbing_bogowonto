@@ -646,6 +646,32 @@ export default function ReservasiPage() {
                           </div>
 
                           <div>
+                            <label className="text-[11px] font-bold text-[#050505] block mb-1">Jenis Kelamin *</label>
+                            <select
+                              value={members[0].jenis_kelamin || 'L'}
+                              onChange={(e) => handleMemberChange(0, 'jenis_kelamin', e.target.value)}
+                              className="w-full px-3.5 py-2.5 bg-white border border-[#e7e5e4] rounded-xl text-xs font-bold text-[#050505] focus:outline-none focus:ring-2 focus:ring-[#0D5C3A]"
+                            >
+                              <option value="L">Laki-laki</option>
+                              <option value="P">Perempuan</option>
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="text-[11px] font-bold text-[#050505] block mb-1">Umur / Usia (Tahun) *</label>
+                            <input
+                              type="number"
+                              required
+                              min={10}
+                              max={80}
+                              placeholder="Contoh: 22"
+                              value={members[0].umur}
+                              onChange={(e) => handleMemberChange(0, 'umur', e.target.value)}
+                              className="w-full px-3.5 py-2.5 bg-white border border-[#e7e5e4] rounded-xl text-xs font-bold text-[#050505] focus:outline-none focus:ring-2 focus:ring-[#0D5C3A]"
+                            />
+                          </div>
+
+                          <div>
                             <label className="text-[11px] font-bold text-[#050505] block mb-1">Nomor WhatsApp Aktif *</label>
                             <input
                               type="tel"
@@ -658,12 +684,12 @@ export default function ReservasiPage() {
                           </div>
 
                           <div>
-                            <label className="text-[11px] font-bold text-[#050505] block mb-1">Email (Untuk Bukti Tiket)</label>
+                            <label className="text-[11px] font-bold text-[#050505] block mb-1">Kota Asal / Alamat Domisili</label>
                             <input
-                              type="email"
-                              placeholder="email@domain.com"
-                              value={members[0].email}
-                              onChange={(e) => handleMemberChange(0, 'email', e.target.value)}
+                              type="text"
+                              placeholder="Contoh: Wonosobo, Jawa Tengah"
+                              value={members[0].alamat}
+                              onChange={(e) => handleMemberChange(0, 'alamat', e.target.value)}
                               className="w-full px-3.5 py-2.5 bg-white border border-[#e7e5e4] rounded-xl text-xs font-bold text-[#050505] focus:outline-none focus:ring-2 focus:ring-[#0D5C3A]"
                             />
                           </div>
@@ -682,7 +708,7 @@ export default function ReservasiPage() {
                             return (
                               <div key={actualIndex} className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#e7e5e4] space-y-3">
                                 <span className="text-[11px] font-black text-[#707070]">Anggota #{actualIndex}</span>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                                   <div>
                                     <label className="text-[10px] font-bold text-[#707070] block mb-1">Nama Lengkap *</label>
                                     <input
@@ -711,13 +737,27 @@ export default function ReservasiPage() {
                                   <div>
                                     <label className="text-[10px] font-bold text-[#707070] block mb-1">Jenis Kelamin</label>
                                     <select
-                                      value={member.jenis_kelamin}
+                                      value={member.jenis_kelamin || 'L'}
                                       onChange={(e) => handleMemberChange(actualIndex, 'jenis_kelamin', e.target.value)}
                                       className="w-full px-3 py-2 bg-white border border-[#e7e5e4] rounded-xl text-xs font-bold text-[#050505]"
                                     >
                                       <option value="L">Laki-laki</option>
                                       <option value="P">Perempuan</option>
                                     </select>
+                                  </div>
+
+                                  <div>
+                                    <label className="text-[10px] font-bold text-[#707070] block mb-1">Umur (Tahun) *</label>
+                                    <input
+                                      type="number"
+                                      required
+                                      min={10}
+                                      max={80}
+                                      placeholder="Contoh: 20"
+                                      value={member.umur}
+                                      onChange={(e) => handleMemberChange(actualIndex, 'umur', e.target.value)}
+                                      className="w-full px-3 py-2 bg-white border border-[#e7e5e4] rounded-xl text-xs font-bold text-[#050505]"
+                                    />
                                   </div>
                                 </div>
                               </div>
@@ -1156,11 +1196,28 @@ export default function ReservasiPage() {
                           <span className="text-[10px] font-black text-[#707070] uppercase tracking-wider block mb-2">
                             Daftar Anggota Rombongan:
                           </span>
-                          <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                          <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
                             {searchedBooking.members?.map((m: any, idx: number) => (
-                              <div key={idx} className="p-2.5 rounded-xl bg-[#FAF8F5] border border-[#e7e5e4] text-xs flex justify-between items-center">
-                                <span className="font-bold text-[#050505]">{idx + 1}. {m.nama_lengkap} {m.is_ketua ? '(Ketua)' : ''}</span>
-                                <span className="text-[11px] text-[#707070] font-mono">NIK: {m.nik || '-'}</span>
+                              <div key={idx} className="p-3 rounded-2xl bg-[#FAF8F5] border border-[#e7e5e4] text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 shadow-2xs">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-black text-[#050505]">{idx + 1}. {m.nama_lengkap}</span>
+                                  {m.is_ketua && (
+                                    <span className="text-[9px] font-black bg-emerald-100 text-[#0D5C3A] px-2 py-0.5 rounded-md">
+                                      Ketua
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-2.5 text-[11px] text-[#707070] flex-wrap">
+                                  <span className="font-bold text-[#0D5C3A] bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60">
+                                    {m.jenis_kelamin === 'P' ? 'Perempuan' : 'Laki-laki'}
+                                  </span>
+                                  <span className="font-bold text-[#050505] bg-white px-2 py-0.5 rounded-md border border-[#e7e5e4]">
+                                    {m.umur ? `${m.umur} Thn` : '-'}
+                                  </span>
+                                  <span className="font-mono text-[#707070]">
+                                    NIK: {m.nik || '-'}
+                                  </span>
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -1294,9 +1351,9 @@ export default function ReservasiPage() {
                           DAFTAR ANGGOTA:
                         </span>
                         {searchedBooking.members?.map((m: any, idx: number) => (
-                          <div key={idx} className="flex justify-between py-0.5">
+                          <div key={idx} className="flex justify-between py-0.5 text-[9.5px]">
                             <span className="font-bold">
-                              {idx + 1}. {m.nama_lengkap} {m.is_ketua ? '(K)' : ''}
+                              {idx + 1}. {m.nama_lengkap} {m.is_ketua ? '(K)' : ''} ({m.jenis_kelamin === 'P' ? 'P' : 'L'}/{m.umur || '-'}Th)
                             </span>
                             <span className="font-mono">
                               {m.nik || '-'}

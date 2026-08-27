@@ -2298,11 +2298,28 @@ export default function AdminDashboard() {
 
               <div>
                 <span className="text-[10px] font-black text-[#707070] uppercase block mb-1">Daftar Anggota Rombongan:</span>
-                <div className="space-y-1 max-h-36 overflow-y-auto pr-1">
+                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
                   {selectedBookingModal.members?.map((m: any, idx: number) => (
-                    <div key={idx} className="p-2 bg-[#FAF8F5] rounded-xl flex justify-between">
-                      <span className="font-bold">{idx + 1}. {m.nama_lengkap} {m.is_ketua ? '(Ketua)' : ''}</span>
-                      <span className="text-[#707070] font-mono">NIK: {m.nik || '-'}</span>
+                    <div key={idx} className="p-2.5 bg-[#FAF8F5] rounded-xl flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-bold text-[#050505]">{idx + 1}. {m.nama_lengkap}</span>
+                        {m.is_ketua && (
+                          <span className="text-[9px] font-black bg-emerald-100 text-[#0D5C3A] px-1.5 py-0.5 rounded">
+                            Ketua
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 text-[11px] text-[#707070]">
+                        <span className="font-bold text-[#0D5C3A] bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/50">
+                          {m.jenis_kelamin === 'P' ? 'P' : 'L'}
+                        </span>
+                        <span className="font-semibold">
+                          {m.umur ? `${m.umur} Th` : '-'}
+                        </span>
+                        <span className="font-mono text-[10px]">
+                          NIK: {m.nik || '-'}
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
