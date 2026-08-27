@@ -43,6 +43,15 @@ export default function App() {
     }
   }, []);
 
+  // Listen for global admin logout event from API interceptor
+  useEffect(() => {
+    const handleAuthError = () => {
+      setIsAdminLoggedIn(false);
+    };
+    window.addEventListener('bc_admin_logout', handleAuthError);
+    return () => window.removeEventListener('bc_admin_logout', handleAuthError);
+  }, []);
+
   // Scroll to top on route change
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });

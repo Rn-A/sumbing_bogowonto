@@ -24,14 +24,12 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 || error.response?.status === 403) {
+    const isLoginEndpoint = error.config?.url?.includes('/auth/login');
+    if (!isLoginEndpoint && (error.response?.status === 401 || error.response?.status === 403)) {
       // Token expired or invalid — clear session
       sessionStorage.removeItem('bc_admin_token');
       sessionStorage.removeItem('bc_admin_session');
-      // Optionally redirect to home
-      if (window.location.pathname.startsWith('/admin')) {
-        window.location.href = '/';
-      }
+      window.dispatchEvent(new Event('bc_admin_logout'));
     }
     return Promise.reject(error);
   },
