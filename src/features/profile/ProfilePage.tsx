@@ -508,7 +508,7 @@ export default function ProfilePage() {
                 mapStylesList[mapStyle].replace('{s}', 'a')
               ],
               tileSize: 256,
-              attribution: mapStyle === 'satellite' ? 'Â© Esri, Maxar' : 'Â© OpenStreetMap contributors'
+              attribution: mapStyle === 'satellite' ? '© Esri, Maxar' : '© OpenStreetMap contributors'
             }
           },
           layers: [
@@ -557,7 +557,7 @@ export default function ProfilePage() {
           type: 'raster',
           tiles: [tileUrl],
           tileSize: 256,
-          attribution: mapStyle === 'satellite' ? 'Â© Esri, Maxar' : 'Â© OpenStreetMap contributors'
+          attribution: mapStyle === 'satellite' ? '© Esri, Maxar' : '© OpenStreetMap contributors'
         });
 
         let routeLayerId: string | undefined = undefined;
@@ -1582,10 +1582,10 @@ export default function ProfilePage() {
                         </p>
 
                         {/* Max / Min Temps */}
-                        <div className="border-t border-slate-100 dark:border-[#e7e5e4] pt-2 flex items-center justify-center gap-1.5 text-xs font-black">
-                          <span className="text-slate-800 dark:text-[#050505]">{df.tempMax}&deg;</span>
+                        <div className="border-t border-slate-100 dark:border-[#e7e5e4] pt-2 flex items-center justify-center gap-1 text-xs font-black">
+                          <span className="text-slate-800 dark:text-[#050505]">{df.tempMax}&deg;C</span>
                           <span className="text-slate-300 dark:text-slate-600">/</span>
-                          <span className="text-slate-400 dark:text-slate-500 font-bold">{df.tempMin}&deg;</span>
+                          <span className="text-slate-400 dark:text-slate-500 font-bold">{df.tempMin}&deg;C</span>
                         </div>
 
                         {/* Rain Probability Badge */}
@@ -1652,7 +1652,7 @@ export default function ProfilePage() {
                         <strong>Per-hari ini tidak ada informasi baru tentang aktifitas pendakian dan vulkanik melalui jalur ini (08-05-26)</strong>
                       </li>
                       <li>
-                        Mata air hanya tersedia di Pos 1 (Â±1.800 mdpl), sehingga pendaki disarankan membawa 3â€“4 liter air per orang.
+                        Mata air hanya tersedia di Pos 1 (±1.800 mdpl), sehingga pendaki disarankan membawa 3–4 liter air per orang.
                       </li>
                       <li>
                         Jalur bervariasi, mulai dari hutan tropis yang teduh di awal hingga medan berpasir dan berbatu menjelang puncak.
