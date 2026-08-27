@@ -9,6 +9,7 @@ import {
   Bookmark, CheckCircle2, AlertCircle, ArrowRight,
   Flame, Sparkles, MessageCircle, Link2
 } from 'lucide-react';
+import { formatPlainTextToHtml } from '../../utils/textFormatter';
 
 interface ArticleCategory {
   id: string;
@@ -528,7 +529,7 @@ export default function BeritaPage() {
             {/* Content Body */}
             <div 
               className="prose prose-slate max-w-none text-[#292524] text-sm sm:text-base leading-relaxed space-y-5 article-body"
-              dangerouslySetInnerHTML={{ __html: activeArticle.konten }}
+              dangerouslySetInnerHTML={{ __html: formatPlainTextToHtml(activeArticle.konten) }}
             />
 
             {/* Bottom Call to Action for Hikers */}

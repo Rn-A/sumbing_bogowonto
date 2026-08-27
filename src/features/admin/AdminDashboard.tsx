@@ -28,6 +28,7 @@ import {
 import HomeCmsManager from './HomeCmsManager';
 import CatalogCmsManager from './CatalogCmsManager';
 import logoBc from '../../assets/logo_bc.png';
+import { formatPlainTextToHtml, formatHtmlToCleanPlainText } from '../../utils/textFormatter';
 
 function CameraScannerView({ 
   onScanSuccess, 
@@ -240,6 +241,7 @@ export default function AdminDashboard() {
   const [selectedBookingModal, setSelectedBookingModal] = useState<any>(null);
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<any>(null);
+  const [articleTabMode, setArticleTabMode] = useState<'write' | 'preview'>('write');
   const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
   const [editingGallery, setEditingGallery] = useState<any>(null);
 
@@ -820,6 +822,8 @@ export default function AdminDashboard() {
   };
 
   const resetArticleForm = () => {
+    setEditingArticle(null);
+    setArticleTabMode('write');
     setArticleForm({
       judul: '',
       category_name: 'Pengumuman',
@@ -833,11 +837,12 @@ export default function AdminDashboard() {
 
   const handleOpenEditArticle = (article: any) => {
     setEditingArticle(article);
+    setArticleTabMode('write');
     setArticleForm({
       judul: article.judul,
       category_name: article.category?.nama_kategori || 'Pengumuman',
       ringkasan: article.ringkasan || '',
-      konten: article.konten,
+      konten: formatHtmlToCleanPlainText(article.konten || ''),
       foto_sampul: article.foto_sampul || '',
       status: article.status || 'Terbit',
       is_featured: Boolean(article.is_featured),
@@ -2712,10 +2717,14 @@ export default function AdminDashboard() {
             <form 
               onSubmit={(e) => {
                 e.preventDefault();
+                const formattedPayload = {
+                  ...articleForm,
+                  konten: formatPlainTextToHtml(articleForm.konten),
+                };
                 if (editingArticle) {
-                  articleUpdateMutation.mutate({ id: editingArticle.id, data: articleForm });
+                  articleUpdateMutation.mutate({ id: editingArticle.id, data: formattedPayload });
                 } else {
-                  articleCreateMutation.mutate(articleForm);
+                  articleCreateMutation.mutate(formattedPayload);
                 }
               }}
               className="space-y-4 text-xs"
@@ -2728,7 +2737,7 @@ export default function AdminDashboard() {
                   placeholder="Contoh: Himbauan Cuaca & SOP Pendakian Sumbing Via Pencar"
                   value={articleForm.judul}
                   onChange={(e) => setArticleForm({ ...articleForm, judul: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-[#FAF8F5] border border-[#e7e5e4] rounded-xl text-xs font-bold"
+                  className="w-full px-3.5 py-2.5 bg-[#FAF8F5] border border-[#e7e5e4] rounded-xl text-xs font-bold text-[#050505]"
                 />
               </div>
 
@@ -2779,39 +2788,124 @@ export default function AdminDashboard() {
                 <label className="font-bold text-[#050505] block mb-1">Ringkasan Singkat (Excerpt)</label>
                 <textarea
                   rows={2}
-                  placeholder="Ringkasan 1-2 kalimat untuk preview..."
+                  placeholder="Ringkasan 1-2 kalimat untuk preview di kartu berita..."
                   value={articleForm.ringkasan}
                   onChange={(e) => setArticleForm({ ...articleForm, ringkasan: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-[#FAF8F5] border border-[#e7e5e4] rounded-xl text-xs"
+                  className="w-full px-3.5 py-2 bg-[#FAF8F5] border border-[#e7e5e4] rounded-xl text-xs"
                 />
               </div>
 
-              <div>
-                <label className="font-bold text-[#050505] block mb-1">Isi Konten Lengkap Artikel *</label>
-                <textarea
-                  rows={6}
-                  required
-                  placeholder="Tuliskan isi artikel lengkap di sini..."
-                  value={articleForm.konten}
-                  onChange={(e) => setArticleForm({ ...articleForm, konten: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-[#FAF8F5] border border-[#e7e5e4] rounded-xl text-xs leading-relaxed"
-                />
+              {/* Content Body Editor with Natural Plain-Text & Live Preview */}
+              <div className="space-y-1.5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                  <div>
+                    <label className="font-bold text-[#050505] block">Isi Konten Artikel *</label>
+                    <p className="text-[10px] text-[#707070]">Tulis teks biasa tanpa tag HTML. Sistem otomatis memformat paragraf & judul.</p>
+                  </div>
+
+                  {/* Mode Switcher */}
+                  <div className="flex items-center gap-1 bg-[#FAF8F5] p-1 rounded-xl border border-[#e7e5e4] self-start sm:self-auto">
+                    <button
+                      type="button"
+                      onClick={() => setArticleTabMode('write')}
+                      className={`px-3 py-1 rounded-lg font-bold text-[11px] transition-all cursor-pointer ${
+                        articleTabMode === 'write'
+                          ? 'bg-[#0D5C3A] text-white shadow-2xs'
+                          : 'text-[#707070] hover:text-[#050505]'
+                      }`}
+                    >
+                      ✏️ Tulis Teks
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setArticleTabMode('preview')}
+                      className={`px-3 py-1 rounded-lg font-bold text-[11px] transition-all cursor-pointer ${
+                        articleTabMode === 'preview'
+                          ? 'bg-[#0D5C3A] text-white shadow-2xs'
+                          : 'text-[#707070] hover:text-[#050505]'
+                      }`}
+                    >
+                      👁️ Pratinjau (Preview)
+                    </button>
+                  </div>
+                </div>
+
+                {/* Quick formatting helper buttons (only in write mode) */}
+                {articleTabMode === 'write' && (
+                  <div className="flex flex-wrap items-center gap-1.5 p-2 bg-[#FAF8F5] rounded-xl border border-[#e7e5e4]">
+                    <span className="text-[10px] font-black text-[#707070] uppercase mr-1">Bantuan Format:</span>
+                    <button
+                      type="button"
+                      onClick={() => setArticleForm({ ...articleForm, konten: articleForm.konten + '\n\n### Sub-Judul Baru\n' })}
+                      className="px-2 py-1 bg-white hover:bg-emerald-50 text-[10px] font-bold text-[#0D5C3A] rounded-md border border-[#e7e5e4] cursor-pointer"
+                    >
+                      + Sub-Judul (H3)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setArticleForm({ ...articleForm, konten: articleForm.konten + ' **teks tebal** ' })}
+                      className="px-2 py-1 bg-white hover:bg-emerald-50 text-[10px] font-bold text-[#050505] rounded-md border border-[#e7e5e4] cursor-pointer"
+                    >
+                      <strong>B</strong> Tebal
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setArticleForm({ ...articleForm, konten: articleForm.konten + '\n- Poin pertama\n- Poin kedua\n- Poin ketiga\n' })}
+                      className="px-2 py-1 bg-white hover:bg-emerald-50 text-[10px] font-bold text-[#050505] rounded-md border border-[#e7e5e4] cursor-pointer"
+                    >
+                      • Daftar Poin
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setArticleForm({ ...articleForm, konten: articleForm.konten + '\n> Kutipan atau himbauan penting di sini\n' })}
+                      className="px-2 py-1 bg-white hover:bg-emerald-50 text-[10px] font-bold text-amber-800 rounded-md border border-[#e7e5e4] cursor-pointer"
+                    >
+                      💡 Kotak Himbauan
+                    </button>
+                  </div>
+                )}
+
+                {/* Editor or Preview View */}
+                {articleTabMode === 'write' ? (
+                  <textarea
+                    rows={8}
+                    required
+                    placeholder="Tuliskan isi artikel di sini seperti biasa. Pisahkan antar paragraf dengan enter / baris kosong..."
+                    value={articleForm.konten}
+                    onChange={(e) => setArticleForm({ ...articleForm, konten: e.target.value })}
+                    className="w-full px-3.5 py-2.5 bg-white border border-[#e7e5e4] rounded-xl text-xs leading-relaxed font-normal text-[#050505] focus:outline-none focus:ring-2 focus:ring-[#0D5C3A]"
+                  />
+                ) : (
+                  <div className="p-4 bg-white rounded-xl border border-[#e7e5e4] min-h-[180px] max-h-72 overflow-y-auto prose prose-slate text-xs leading-relaxed text-[#292524]">
+                    {articleForm.konten.trim() ? (
+                      <div 
+                        className="space-y-3"
+                        dangerouslySetInnerHTML={{ __html: formatPlainTextToHtml(articleForm.konten) }} 
+                      />
+                    ) : (
+                      <p className="text-slate-400 italic">Belum ada konten untuk ditampilkan.</p>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="pt-3 border-t border-[#e7e5e4] flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsArticleModalOpen(false)}
-                  className="px-4 py-2.5 bg-[#FAF8F5] border border-[#e7e5e4] rounded-xl font-bold cursor-pointer"
+                  className="px-4 py-2 bg-[#FAF8F5] border border-[#e7e5e4] rounded-xl font-bold cursor-pointer"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={articleCreateMutation.isPending || articleUpdateMutation.isPending}
-                  className="px-6 py-2.5 bg-[#0D5C3A] text-white font-black rounded-xl hover:bg-[#064e3b] cursor-pointer shadow-md disabled:opacity-50"
+                  className="px-6 py-2 bg-[#0D5C3A] text-white font-black rounded-xl hover:bg-[#064e3b] cursor-pointer shadow-md disabled:opacity-50 flex items-center gap-1.5"
                 >
-                  {editingArticle ? 'Simpan Pembaruan' : 'Terbitkan Artikel'}
+                  {(articleCreateMutation.isPending || articleUpdateMutation.isPending) && (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  )}
+                  <span>{editingArticle ? 'Simpan Pembaruan' : 'Terbitkan Artikel'}</span>
                 </button>
               </div>
             </form>
