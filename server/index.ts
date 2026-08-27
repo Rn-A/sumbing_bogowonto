@@ -75,7 +75,9 @@ try {
   console.warn('Warning: Failed to create uploads directory:', err);
 }
 
-app.use('/uploads', express.static(uploadsDir));
+if (!process.env.VERCEL) {
+  app.use('/uploads', express.static(uploadsDir));
+}
 
 // ============================================
 // PUBLIC ROUTES
@@ -1639,7 +1641,7 @@ app.post('/api/upload', authenticateAdmin, async (req: any, res: any) => {
 // PRODUCTION: Serve static files
 // ============================================
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production' && !process.env.VERCEL) {
   app.use(express.static(path.resolve('dist')));
   app.get('*', (_req, res) => {
     res.sendFile(path.resolve('dist/index.html'));
