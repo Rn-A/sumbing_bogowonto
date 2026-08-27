@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchAllPublicData, submitReview } from '../../services/api';
+import HikingTrailMapApp from '../../components/trail/HikingTrailMapApp';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { 
@@ -885,6 +886,9 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen pt-[var(--header-height)] bg-[#FAF8F5] dark:bg-[#FAF8F5]">
+      {/* ===== INTERACTIVE HIKING TRAIL MAP APP ===== */}
+      <HikingTrailMapApp />
+
       {/* ===== MAIN CONTENT - MUNCAK.ID STYLE ===== */}
       <section className="section-padding">
         <div className="container-app max-w-6xl">
@@ -975,30 +979,6 @@ export default function ProfilePage() {
                 >
                   <Navigation className={`w-3.5 h-3.5 ${showSegmentDetails ? 'text-[#ea580c]' : 'text-slate-500'}`} />
                   Segmentasi Rute
-                </button>
-                <button 
-                  onClick={() => {
-                    const el = document.getElementById('logistics-calculator');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 bg-[#0D5C3A] text-white hover:bg-[#0D5C3A]/90 font-bold text-xs rounded-full shadow-md shadow-[#0D5C3A]/10 transition-all"
-                >
-                  <Calculator className="w-3.5 h-3.5" />
-                  Atur Logistik —
-                </button>
-                <button className="flex items-center gap-2 px-4 py-2 bg-transparent hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-full border border-slate-200 transition-colors">
-                  <RouteIcon className="w-3.5 h-3.5 text-slate-500" />
-                  Bandingkan Jalur
-                </button>
-                <button 
-                  onClick={() => {
-                    const el = document.getElementById('rules-faq');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 bg-transparent hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-full border border-slate-200 transition-colors"
-                >
-                  <HelpCircle className="w-3.5 h-3.5 text-slate-500" />
-                  Rekomendasi —
                 </button>
               </div>
 
