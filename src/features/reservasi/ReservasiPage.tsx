@@ -786,52 +786,52 @@ export default function ReservasiPage() {
                           </span>
                         </div>
 
-                        {/* ======================================================== */}
-                        {/* ONLINE PAYMENT METHODS (QRIS & VA) - TEMPORARILY COMMENTED */}
-                        {/* ======================================================== */}
-                        {/* 
-                        {/* QRIS Option */}
-                        <div 
-                          onClick={() => setPaymentMethod('QRIS')}
-                          className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${
-                            paymentMethod === 'QRIS'
-                              ? 'border-[#0D5C3A] bg-emerald-50/50 shadow-2xs'
-                              : 'border-[#e7e5e4] bg-[#FAF8F5]'
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-white border border-[#e7e5e4] flex items-center justify-center font-black text-xs text-[#050505]">
-                              QRIS
+                        {/* ONLINE PAYMENT METHODS (QRIS & VA) - PRESERVED & TEMPORARILY DISABLED */}
+                        {false && (
+                          <>
+                            {/* QRIS Option */}
+                            <div 
+                              onClick={() => setPaymentMethod('QRIS')}
+                              className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${
+                                paymentMethod === 'QRIS'
+                                  ? 'border-[#0D5C3A] bg-emerald-50/50 shadow-2xs'
+                                  : 'border-[#e7e5e4] bg-[#FAF8F5]'
+                              }`}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-white border border-[#e7e5e4] flex items-center justify-center font-black text-xs text-[#050505]">
+                                  QRIS
+                                </div>
+                                <div>
+                                  <p className="text-xs font-black text-[#050505]">QRIS Instan (Semua Bank & E-Wallet)</p>
+                                  <p className="text-[10px] text-[#707070]">BCA, BRI, Mandiri, GoPay, OVO, ShopeePay, DANA</p>
+                                </div>
+                              </div>
+                              <input type="radio" checked={paymentMethod === 'QRIS'} readOnly className="text-[#0D5C3A]" />
                             </div>
-                            <div>
-                              <p className="text-xs font-black text-[#050505]">QRIS Instan (Semua Bank & E-Wallet)</p>
-                              <p className="text-[10px] text-[#707070]">BCA, BRI, Mandiri, GoPay, OVO, ShopeePay, DANA</p>
-                            </div>
-                          </div>
-                          <input type="radio" checked={paymentMethod === 'QRIS'} readOnly className="text-[#0D5C3A]" />
-                        </div>
 
-                        {/* Virtual Account Options */}
-                        <div 
-                          onClick={() => setPaymentMethod('VA_BCA')}
-                          className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${
-                            paymentMethod === 'VA_BCA'
-                              ? 'border-[#0D5C3A] bg-emerald-50/50 shadow-2xs'
-                              : 'border-[#e7e5e4] bg-[#FAF8F5]'
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-black text-xs">
-                              BCA
+                            {/* Virtual Account Options */}
+                            <div 
+                              onClick={() => setPaymentMethod('VA_BCA')}
+                              className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${
+                                paymentMethod === 'VA_BCA'
+                                  ? 'border-[#0D5C3A] bg-emerald-50/50 shadow-2xs'
+                                  : 'border-[#e7e5e4] bg-[#FAF8F5]'
+                              }`}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-black text-xs">
+                                  BCA
+                                </div>
+                                <div>
+                                  <p className="text-xs font-black text-[#050505]">Virtual Account BCA</p>
+                                  <p className="text-[10px] text-[#707070]">Verifikasi otomatis 24 jam</p>
+                                </div>
+                              </div>
+                              <input type="radio" checked={paymentMethod === 'VA_BCA'} readOnly className="text-[#0D5C3A]" />
                             </div>
-                            <div>
-                              <p className="text-xs font-black text-[#050505]">Virtual Account BCA</p>
-                              <p className="text-[10px] text-[#707070]">Verifikasi otomatis 24 jam</p>
-                            </div>
-                          </div>
-                          <input type="radio" checked={paymentMethod === 'VA_BCA'} readOnly className="text-[#0D5C3A]" />
-                        </div>
-                        */}
+                          </>
+                        )}
 
                         {/* Cash on Basecamp Option (Active On-Site Payment) */}
                         <div 
@@ -1491,112 +1491,115 @@ export default function ReservasiPage() {
               {/* Tab Body */}
               <div className="p-6 space-y-6">
                 
-                {/* 
-                {/* 1. QRIS TAB */}
-                {paymentModalTab === 'qris' && (
-                  <div className="space-y-4 text-center">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-red-50 text-red-600 border border-red-200 rounded-full text-[10px] font-black uppercase">
-                      <span>QRIS RESMI &bull; Bebas Biaya Admin</span>
-                    </div>
+                {/* ONLINE TABS (QRIS & VA) - PRESERVED & TEMPORARILY DISABLED */}
+                {false && (
+                  <>
+                    {/* 1. QRIS TAB */}
+                    {paymentModalTab === 'qris' && (
+                      <div className="space-y-4 text-center">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-red-50 text-red-600 border border-red-200 rounded-full text-[10px] font-black uppercase">
+                          <span>QRIS RESMI &bull; Bebas Biaya Admin</span>
+                        </div>
 
-                    {/* QR Code Container */}
-                    <div className="w-56 h-56 mx-auto bg-white p-3 rounded-2xl border-2 border-[#0D5C3A] shadow-md flex flex-col items-center justify-center relative">
-                      <img
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=00020101021226580016ID.CO.QRIS.WWW01189360091430000000000215000350005802ID5917BASECAMP BOGOWONTO6008WONOSOBO6304${activePaymentBooking.kode_booking}`}
-                        alt="QRIS Code"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
+                        {/* QR Code Container */}
+                        <div className="w-56 h-56 mx-auto bg-white p-3 rounded-2xl border-2 border-[#0D5C3A] shadow-md flex flex-col items-center justify-center relative">
+                          <img
+                            src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=00020101021226580016ID.CO.QRIS.WWW01189360091430000000000215000350005802ID5917BASECAMP BOGOWONTO6008WONOSOBO6304${activePaymentBooking.kode_booking}`}
+                            alt="QRIS Code"
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
 
-                    <div className="text-[#707070] text-xs">
-                      <p className="font-bold text-[#050505]">Mendukung Semua m-Banking & E-Wallet:</p>
-                      <p className="text-[11px] mt-1">BCA Mobile, BRImo, Livin' Mandiri, BNI, GoPay, OVO, DANA, ShopeePay, LinkAja</p>
-                    </div>
+                        <div className="text-[#707070] text-xs">
+                          <p className="font-bold text-[#050505]">Mendukung Semua m-Banking & E-Wallet:</p>
+                          <p className="text-[11px] mt-1">BCA Mobile, BRImo, Livin' Mandiri, BNI, GoPay, OVO, DANA, ShopeePay, LinkAja</p>
+                        </div>
 
-                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-[11px] font-semibold flex items-center justify-center gap-2">
-                      <Clock className="w-4 h-4 text-amber-600 shrink-0" />
-                      <span>Batas Waktu Bayar: <strong>14:59 WIB</strong></span>
-                    </div>
-
-                    <button
-                      onClick={handleSimulatePaymentConfirm}
-                      disabled={isSimulatingPayment}
-                      className="w-full py-3 bg-[#0D5C3A] hover:bg-[#064e3b] text-white text-xs font-black rounded-xl uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
-                    >
-                      {isSimulatingPayment ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                      <span>Konfirmasi / Simulasikan Pembayaran QRIS</span>
-                    </button>
-                  </div>
-                )}
-
-                {/* 2. VIRTUAL ACCOUNT TAB */}
-                {paymentModalTab === 'va' && (
-                  <div className="space-y-4">
-                    <label className="text-xs font-black text-[#050505] block">Pilih Bank Virtual Account:</label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        { id: 'BCA', label: 'BCA VA' },
-                        { id: 'BRI', label: 'BRI VA' },
-                        { id: 'MANDIRI', label: 'Mandiri VA' },
-                      ].map((bank) => (
-                        <button
-                          key={bank.id}
-                          onClick={() => setSelectedVaBank(bank.id as any)}
-                          className={`p-3 rounded-xl border-2 text-xs font-black transition-all cursor-pointer flex flex-col items-center gap-1 ${
-                            selectedVaBank === bank.id
-                              ? 'border-[#0D5C3A] bg-emerald-50 text-[#0D5C3A]'
-                              : 'border-[#e7e5e4] bg-[#FAF8F5] text-[#707070]'
-                          }`}
-                        >
-                          <span>{bank.label}</span>
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* VA Number Display */}
-                    <div className="p-4 bg-[#FAF8F5] rounded-2xl border border-[#e7e5e4] space-y-2">
-                      <span className="text-[10px] font-bold text-[#707070] uppercase block">Nomor Virtual Account {selectedVaBank}</span>
-                      <div className="flex items-center justify-between">
-                        <span className="text-lg font-black font-mono text-[#050505] tracking-wider">
-                          {selectedVaBank === 'BCA' && `88001${activePaymentBooking.kode_booking.replace(/\D/g, '')}`}
-                          {selectedVaBank === 'BRI' && `12800${activePaymentBooking.kode_booking.replace(/\D/g, '')}`}
-                          {selectedVaBank === 'MANDIRI' && `89008${activePaymentBooking.kode_booking.replace(/\D/g, '')}`}
-                        </span>
+                        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-[11px] font-semibold flex items-center justify-center gap-2">
+                          <Clock className="w-4 h-4 text-amber-600 shrink-0" />
+                          <span>Batas Waktu Bayar: <strong>14:59 WIB</strong></span>
+                        </div>
 
                         <button
-                          onClick={() => {
-                            const num = selectedVaBank === 'BCA' ? `88001${activePaymentBooking.kode_booking.replace(/\D/g, '')}` : selectedVaBank === 'BRI' ? `12800${activePaymentBooking.kode_booking.replace(/\D/g, '')}` : `89008${activePaymentBooking.kode_booking.replace(/\D/g, '')}`;
-                            navigator.clipboard.writeText(num);
-                            setVaCopied(true);
-                            setTimeout(() => setVaCopied(false), 2000);
-                          }}
-                          className="px-3 py-1.5 rounded-lg bg-[#0D5C3A] text-white text-xs font-bold hover:bg-[#064e3b] transition-all flex items-center gap-1 cursor-pointer"
+                          onClick={handleSimulatePaymentConfirm}
+                          disabled={isSimulatingPayment}
+                          className="w-full py-3 bg-[#0D5C3A] hover:bg-[#064e3b] text-white text-xs font-black rounded-xl uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
                         >
-                          {vaCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                          <span>{vaCopied ? 'Tersalin' : 'Salin'}</span>
+                          {isSimulatingPayment ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+                          <span>Konfirmasi / Simulasikan Pembayaran QRIS</span>
                         </button>
                       </div>
-                    </div>
+                    )}
 
-                    {/* Step-by-step instructions */}
-                    <div className="text-xs text-[#707070] space-y-1 bg-[#FAF8F5] p-3 rounded-xl border border-[#e7e5e4]">
-                      <p className="font-bold text-[#050505]">Cara Bayar via m-Banking:</p>
-                      <p>1. Buka m-Banking {selectedVaBank} ➔ Pilih Transfer ➔ Virtual Account.</p>
-                      <p>2. Tempelkan nomor VA di atas ➔ Tekan Lanjut.</p>
-                      <p>3. Konfirmasi nominal <strong>Rp {(activePaymentBooking.total_harga || 35000).toLocaleString('id-ID')}</strong> ➔ Masukkan PIN.</p>
-                    </div>
+                    {/* 2. VIRTUAL ACCOUNT TAB */}
+                    {paymentModalTab === 'va' && (
+                      <div className="space-y-4">
+                        <label className="text-xs font-black text-[#050505] block">Pilih Bank Virtual Account:</label>
+                        <div className="grid grid-cols-3 gap-2">
+                          {[
+                            { id: 'BCA', label: 'BCA VA' },
+                            { id: 'BRI', label: 'BRI VA' },
+                            { id: 'MANDIRI', label: 'Mandiri VA' },
+                          ].map((bank) => (
+                            <button
+                              key={bank.id}
+                              onClick={() => setSelectedVaBank(bank.id as any)}
+                              className={`p-3 rounded-xl border-2 text-xs font-black transition-all cursor-pointer flex flex-col items-center gap-1 ${
+                                selectedVaBank === bank.id
+                                  ? 'border-[#0D5C3A] bg-emerald-50 text-[#0D5C3A]'
+                                  : 'border-[#e7e5e4] bg-[#FAF8F5] text-[#707070]'
+                              }`}
+                            >
+                              <span>{bank.label}</span>
+                            </button>
+                          ))}
+                        </div>
 
-                    <button
-                      onClick={handleSimulatePaymentConfirm}
-                      disabled={isSimulatingPayment}
-                      className="w-full py-3 bg-[#0D5C3A] hover:bg-[#064e3b] text-white text-xs font-black rounded-xl uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
-                    >
-                      {isSimulatingPayment ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                      <span>Konfirmasi / Simulasikan Transfer VA</span>
-                    </button>
-                  </div>
+                        {/* VA Number Display */}
+                        <div className="p-4 bg-[#FAF8F5] rounded-2xl border border-[#e7e5e4] space-y-2">
+                          <span className="text-[10px] font-bold text-[#707070] uppercase block">Nomor Virtual Account {selectedVaBank}</span>
+                          <div className="flex items-center justify-between">
+                            <span className="text-lg font-black font-mono text-[#050505] tracking-wider">
+                              {selectedVaBank === 'BCA' && `88001${activePaymentBooking.kode_booking.replace(/\D/g, '')}`}
+                              {selectedVaBank === 'BRI' && `12800${activePaymentBooking.kode_booking.replace(/\D/g, '')}`}
+                              {selectedVaBank === 'MANDIRI' && `89008${activePaymentBooking.kode_booking.replace(/\D/g, '')}`}
+                            </span>
+
+                            <button
+                              onClick={() => {
+                                const num = selectedVaBank === 'BCA' ? `88001${activePaymentBooking.kode_booking.replace(/\D/g, '')}` : selectedVaBank === 'BRI' ? `12800${activePaymentBooking.kode_booking.replace(/\D/g, '')}` : `89008${activePaymentBooking.kode_booking.replace(/\D/g, '')}`;
+                                navigator.clipboard.writeText(num);
+                                setVaCopied(true);
+                                setTimeout(() => setVaCopied(false), 2000);
+                              }}
+                              className="px-3 py-1.5 rounded-lg bg-[#0D5C3A] text-white text-xs font-bold hover:bg-[#064e3b] transition-all flex items-center gap-1 cursor-pointer"
+                            >
+                              {vaCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                              <span>{vaCopied ? 'Tersalin' : 'Salin'}</span>
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Step-by-step instructions */}
+                        <div className="text-xs text-[#707070] space-y-1 bg-[#FAF8F5] p-3 rounded-xl border border-[#e7e5e4]">
+                          <p className="font-bold text-[#050505]">Cara Bayar via m-Banking:</p>
+                          <p>1. Buka m-Banking {selectedVaBank} ➔ Pilih Transfer ➔ Virtual Account.</p>
+                          <p>2. Tempelkan nomor VA di atas ➔ Tekan Lanjut.</p>
+                          <p>3. Konfirmasi nominal <strong>Rp {(activePaymentBooking.total_harga || 35000).toLocaleString('id-ID')}</strong> ➔ Masukkan PIN.</p>
+                        </div>
+
+                        <button
+                          onClick={handleSimulatePaymentConfirm}
+                          disabled={isSimulatingPayment}
+                          className="w-full py-3 bg-[#0D5C3A] hover:bg-[#064e3b] text-white text-xs font-black rounded-xl uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
+                        >
+                          {isSimulatingPayment ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+                          <span>Konfirmasi / Simulasikan Transfer VA</span>
+                        </button>
+                      </div>
+                    )}
+                  </>
                 )}
-                */}
 
                 {/* 3. CASH TAB (ACTIVE ON-SITE PAYMENT) */}
                 <div className="space-y-4 text-center">
