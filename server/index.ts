@@ -1322,6 +1322,42 @@ app.delete('/api/admin/galleries/:id', authenticateAdmin, async (req, res) => {
   }
 });
 
+// Update gallery item
+app.put('/api/admin/galleries/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { judul, category_name, deskripsi, url_media, is_featured } = req.body;
+
+    let category_id: string | undefined = undefined;
+    if (category_name) {
+      const catSlug = category_name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      let category = await prisma.galleryCategory.findUnique({ where: { slug: catSlug } });
+      if (!category) {
+        category = await prisma.galleryCategory.create({
+          data: { nama_kategori: category_name, slug: catSlug },
+        });
+      }
+      category_id = category.id;
+    }
+
+    const updated = await prisma.gallery.update({
+      where: { id: req.params.id },
+      data: {
+        ...(judul && { judul }),
+        ...(deskripsi !== undefined && { deskripsi }),
+        ...(url_media && { url_media }),
+        ...(category_id && { category_id }),
+        ...(is_featured !== undefined && { is_featured: Boolean(is_featured) }),
+      },
+      include: { category: true },
+    });
+
+    res.json({ success: true, data: updated, message: 'Foto galeri berhasil diperbarui!' });
+  } catch (err: any) {
+    console.error('Error updating gallery item:', err);
+    res.status(500).json({ success: false, error: 'Gagal memperbarui foto galeri.' });
+  }
+});
+
 // ============================================
 // CMS: PACKAGES / TARIF SIMAKSI
 // ============================================

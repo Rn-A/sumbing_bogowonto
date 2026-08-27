@@ -98,6 +98,7 @@ export const deleteArticle = (id: string) => api.delete(`/admin/articles/${id}`)
 // --- Admin CMS: Galleries ---
 export const fetchAdminGalleries = () => api.get('/admin/galleries').then(r => r.data);
 export const createGallery = (data: Record<string, unknown>) => api.post('/admin/galleries', data).then(r => r.data);
+export const updateGallery = (id: string, data: Record<string, unknown>) => api.put(`/admin/galleries/${id}`, data).then(r => r.data);
 export const deleteGallery = (id: string) => api.delete(`/admin/galleries/${id}`).then(r => r.data);
 
 // --- Admin CMS: Packages / SIMAKSI Pricing ---

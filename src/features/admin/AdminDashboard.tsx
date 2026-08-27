@@ -7,7 +7,7 @@ import {
   fetchAdminReviews, approveReview, deleteReview, 
   fetchAllPublicData, updateRouteStatus, updateRouteDetails,
   fetchAdminArticles, createArticle, updateArticle, deleteArticle,
-  fetchAdminGalleries, createGallery, deleteGallery,
+  fetchAdminGalleries, createGallery, updateGallery, deleteGallery,
   updateBookingPackage,
   createSegment, updateSegment, deleteSegment,
   createPost, updatePost, deletePost,
@@ -241,6 +241,7 @@ export default function AdminDashboard() {
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<any>(null);
   const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
+  const [editingGallery, setEditingGallery] = useState<any>(null);
 
   // Profile CMS Modals
   const [isSegmentModalOpen, setIsSegmentModalOpen] = useState(false);
@@ -588,6 +589,29 @@ export default function AdminDashboard() {
     },
   });
 
+  const resetGalleryForm = () => {
+    setEditingGallery(null);
+    setGalleryForm({
+      judul: '',
+      category_name: 'Lanskap & Puncak',
+      deskripsi: '',
+      url_media: '',
+      is_featured: false,
+    });
+  };
+
+  const handleOpenEditGallery = (item: any) => {
+    setEditingGallery(item);
+    setGalleryForm({
+      judul: item.judul || '',
+      category_name: item.category?.nama_kategori || 'Lanskap & Puncak',
+      deskripsi: item.deskripsi || '',
+      url_media: item.url_media || '',
+      is_featured: Boolean(item.is_featured),
+    });
+    setIsGalleryModalOpen(true);
+  };
+
   const galleryCreateMutation = useMutation({
     mutationFn: (data: Record<string, unknown>) => createGallery(data),
     onSuccess: () => {
@@ -598,6 +622,18 @@ export default function AdminDashboard() {
       alert('Foto berhasil ditambahkan ke galeri!');
     },
     onError: (err: any) => alert(err.response?.data?.error || 'Gagal menambahkan foto galeri.'),
+  });
+
+  const galleryUpdateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => updateGallery(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['adminGalleries'] });
+      queryClient.invalidateQueries({ queryKey: ['publicAllData'] });
+      setIsGalleryModalOpen(false);
+      resetGalleryForm();
+      alert('Foto galeri berhasil diperbarui!');
+    },
+    onError: (err: any) => alert(err.response?.data?.error || 'Gagal memperbarui foto galeri.'),
   });
 
   const galleryDeleteMutation = useMutation({
@@ -1956,30 +1992,54 @@ export default function AdminDashboard() {
             {/* Gallery Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               {galleries.map((g: any) => (
-                <div key={g.id} className="group relative bg-white dark:bg-[#F4F0E8] rounded-2xl border border-[#e7e5e4] overflow-hidden shadow-xs">
-                  <img 
-                    src={g.url_media} 
-                    alt={g.judul} 
-                    className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="p-3">
-                    <span className="text-[9px] font-bold text-[#0D5C3A] uppercase block">
-                      {g.category?.nama_kategori || 'Galeri'}
-                    </span>
-                    <p className="text-xs font-black text-[#050505] truncate">{g.judul}</p>
+                <div key={g.id} className="group relative bg-white dark:bg-[#F4F0E8] rounded-2xl border border-[#e7e5e4] overflow-hidden shadow-xs flex flex-col justify-between">
+                  <div className="relative overflow-hidden aspect-4/3 bg-slate-100 dark:bg-stone-800">
+                    <img 
+                      src={g.url_media} 
+                      alt={g.judul} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    
+                    {/* Action buttons (Edit & Delete) */}
+                    <div className="absolute top-2 right-2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all z-10">
+                      <button
+                        onClick={() => handleOpenEditGallery(g)}
+                        className="p-1.5 bg-black/70 hover:bg-amber-600 text-white rounded-lg transition-colors cursor-pointer shadow-sm"
+                        title="Edit Foto Galeri"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (confirm(`Hapus foto "${g.judul}" dari galeri?`)) {
+                            galleryDeleteMutation.mutate(g.id);
+                          }
+                        }}
+                        className="p-1.5 bg-black/70 hover:bg-rose-600 text-white rounded-lg transition-colors cursor-pointer shadow-sm"
+                        title="Hapus Foto"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    {g.is_featured && (
+                      <span className="absolute bottom-2 left-2 bg-amber-500/95 text-white text-[9px] font-black px-2 py-0.5 rounded-md shadow-xs">
+                        Unggulan
+                      </span>
+                    )}
                   </div>
 
-                  <button
-                    onClick={() => {
-                      if (confirm(`Hapus foto "${g.judul}" dari galeri?`)) {
-                        galleryDeleteMutation.mutate(g.id);
-                      }
-                    }}
-                    className="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-rose-600 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
-                    title="Hapus Foto"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  <div className="p-3">
+                    <div className="flex items-center justify-between gap-1 mb-0.5">
+                      <span className="text-[9px] font-bold text-[#0D5C3A] uppercase truncate">
+                        {g.category?.nama_kategori || 'Galeri'}
+                      </span>
+                    </div>
+                    <p className="text-xs font-black text-[#050505] truncate" title={g.judul}>{g.judul}</p>
+                    {g.deskripsi && (
+                      <p className="text-[10px] text-slate-500 truncate mt-0.5" title={g.deskripsi}>{g.deskripsi}</p>
+                    )}
+                  </div>
                 </div>
               ))}
 
@@ -2753,16 +2813,26 @@ export default function AdminDashboard() {
       )}
 
       {/* ============================================================ */}
-      {/* MODAL: TAMBAH FOTO GALERI */}
+      {/* MODAL: TAMBAH / EDIT FOTO GALERI */}
       {/* ============================================================ */}
       {isGalleryModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white dark:bg-[#F4F0E8] rounded-3xl border border-[#e7e5e4] w-full max-w-md p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between pb-3 border-b border-[#e7e5e4]">
-              <h3 className="text-base font-black text-[#050505]">Tambah Foto ke Galeri</h3>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-[#0D5C3A]/10 flex items-center justify-center text-[#0D5C3A]">
+                  <ImageIcon className="w-4 h-4" />
+                </div>
+                <h3 className="text-base font-black text-[#050505]">
+                  {editingGallery ? 'Edit Foto Galeri' : 'Tambah Foto ke Galeri'}
+                </h3>
+              </div>
               <button 
-                onClick={() => setIsGalleryModalOpen(false)}
-                className="p-1.5 rounded-xl hover:bg-slate-100 text-slate-500 cursor-pointer"
+                onClick={() => {
+                  setIsGalleryModalOpen(false);
+                  resetGalleryForm();
+                }}
+                className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-stone-200 text-slate-500 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -2771,9 +2841,13 @@ export default function AdminDashboard() {
             <form 
               onSubmit={(e) => {
                 e.preventDefault();
-                galleryCreateMutation.mutate(galleryForm);
+                if (editingGallery) {
+                  galleryUpdateMutation.mutate({ id: editingGallery.id, data: galleryForm });
+                } else {
+                  galleryCreateMutation.mutate(galleryForm);
+                }
               }}
-              className="space-y-3 text-xs"
+              className="space-y-3.5 text-xs"
             >
               <div>
                 <label className="font-bold text-[#050505] block mb-1">Judul / Caption Foto *</label>
@@ -2802,7 +2876,20 @@ export default function AdminDashboard() {
               </div>
 
               <div>
-                <label className="font-bold text-[#050505] block mb-1">Unggah Foto Dokumentasi *</label>
+                <label className="font-bold text-[#050505] block mb-1">Deskripsi Singkat (Opsional)</label>
+                <textarea
+                  rows={2}
+                  placeholder="Catatan keindahan alam, lokasi, atau momen..."
+                  value={galleryForm.deskripsi}
+                  onChange={(e) => setGalleryForm({ ...galleryForm, deskripsi: e.target.value })}
+                  className="w-full px-3.5 py-2 bg-[#FAF8F5] border border-[#e7e5e4] rounded-xl text-xs font-normal"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-[#050505] block mb-1">
+                  {editingGallery ? 'Ubah / Ganti Foto Dokumentasi' : 'Unggah Foto Dokumentasi *'}
+                </label>
                 <input
                   type="file"
                   accept="image/*"
@@ -2820,27 +2907,53 @@ export default function AdminDashboard() {
                   </p>
                 )}
                 {galleryForm.url_media && !isUploading && (
-                  <div className="mt-2 flex items-center gap-2 bg-emerald-50 p-2 rounded-lg border border-emerald-100">
-                    <img src={galleryForm.url_media} className="w-10 h-10 rounded-lg object-cover border" alt="preview" />
-                    <span className="text-[10px] text-emerald-750 truncate flex-1 font-mono">{galleryForm.url_media}</span>
+                  <div className="mt-2 flex items-center gap-2 bg-emerald-50 dark:bg-[#0D5C3A]/10 p-2 rounded-xl border border-emerald-200 dark:border-emerald-800/40">
+                    <img src={galleryForm.url_media} className="w-12 h-12 rounded-lg object-cover border border-emerald-300 dark:border-emerald-700 flex-shrink-0" alt="preview" />
+                    <div className="flex-1 min-w-0">
+                      <span className="text-[9px] font-bold text-[#0D5C3A] block">Foto Siap</span>
+                      <span className="text-[10px] text-slate-600 dark:text-stone-300 truncate block font-mono">{galleryForm.url_media}</span>
+                    </div>
                   </div>
                 )}
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <input
+                  type="checkbox"
+                  id="gallery-is-featured"
+                  checked={galleryForm.is_featured}
+                  onChange={(e) => setGalleryForm({ ...galleryForm, is_featured: e.target.checked })}
+                  className="w-4 h-4 text-[#0D5C3A] rounded border-slate-300 focus:ring-[#0D5C3A] cursor-pointer"
+                />
+                <label htmlFor="gallery-is-featured" className="text-xs font-bold text-[#050505] cursor-pointer select-none">
+                  Tandai sebagai foto unggulan (Featured)
+                </label>
               </div>
 
               <div className="pt-3 border-t border-[#e7e5e4] flex justify-end gap-2">
                 <button
                   type="button"
-                  onClick={() => setIsGalleryModalOpen(false)}
-                  className="px-4 py-2 bg-[#FAF8F5] border border-[#e7e5e4] rounded-xl font-bold cursor-pointer"
+                  onClick={() => {
+                    setIsGalleryModalOpen(false);
+                    resetGalleryForm();
+                  }}
+                  className="px-4 py-2 bg-[#FAF8F5] border border-[#e7e5e4] rounded-xl font-bold cursor-pointer hover:bg-slate-100 dark:hover:bg-stone-200"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  disabled={galleryCreateMutation.isPending}
-                  className="px-5 py-2 bg-[#0D5C3A] text-white font-black rounded-xl hover:bg-[#064e3b] cursor-pointer shadow-md disabled:opacity-50"
+                  disabled={galleryCreateMutation.isPending || galleryUpdateMutation.isPending || isUploading || !galleryForm.url_media}
+                  className="px-5 py-2 bg-[#0D5C3A] text-white font-black rounded-xl hover:bg-[#064e3b] cursor-pointer shadow-md disabled:opacity-50 flex items-center gap-1.5"
                 >
-                  Simpan Foto
+                  {(galleryCreateMutation.isPending || galleryUpdateMutation.isPending) && (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  )}
+                  <span>
+                    {editingGallery 
+                      ? (galleryUpdateMutation.isPending ? 'Menyimpan...' : 'Simpan Perubahan') 
+                      : (galleryCreateMutation.isPending ? 'Menyimpan...' : 'Simpan Foto')}
+                  </span>
                 </button>
               </div>
             </form>
