@@ -3,28 +3,30 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
-import { fileURLToPath } from 'url';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
-// @ts-ignore
+// @ts-ignore — no type declarations for midtrans-client
 import midtransClient from 'midtrans-client';
 
 dotenv.config();
 
-const __dirname = process.env.VERCEL
-  ? process.cwd()
-  : path.dirname(fileURLToPath(import.meta.url));
+const __dirname = process.cwd();
 
 const app = express();
 const prisma = new PrismaClient();
 
-// Midtrans Snap API Client
-const snap = new midtransClient.Snap({
-  isProduction: process.env.MIDTRANS_IS_PRODUCTION === 'true',
-  serverKey: process.env.MIDTRANS_SERVER_KEY || '',
-  clientKey: process.env.MIDTRANS_CLIENT_KEY || '',
-});
+// Midtrans Snap API Client (lazy init to prevent crashes)
+let snap: any = null;
+try {
+  snap = new midtransClient.Snap({
+    isProduction: process.env.MIDTRANS_IS_PRODUCTION === 'true',
+    serverKey: process.env.MIDTRANS_SERVER_KEY || '',
+    clientKey: process.env.MIDTRANS_CLIENT_KEY || '',
+  });
+} catch (err) {
+  console.warn('Warning: midtrans-client initialization failed, payment features disabled');
+}
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
