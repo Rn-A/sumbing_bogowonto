@@ -15,6 +15,7 @@ import ReservasiPage from './features/reservasi/ReservasiPage';
 import GaleriPage from './features/galeri/GaleriPage';
 import KontakPage from './features/kontak/KontakPage';
 import AdminDashboard from './features/admin/AdminDashboard';
+import ErrorBoundary from './components/common/ErrorBoundary';
 import { loginAdmin } from './services/api';
 import { Loader2 } from 'lucide-react';
 
@@ -120,7 +121,9 @@ export default function App() {
                 path="/admin"
                 element={
                   isAdminLoggedIn ? (
-                    <AdminDashboard />
+                    <ErrorBoundary fallbackTitle="Gagal Memuat Panel Admin">
+                      <AdminDashboard />
+                    </ErrorBoundary>
                   ) : (
                     <div className="min-h-screen pt-24 pb-16 flex items-center justify-center px-4 bg-[#FAF8F5]">
                       <div className="bg-white dark:bg-[#F4F0E8] rounded-3xl p-8 sm:p-10 max-w-md w-full border border-[#e7e5e4] shadow-xl">

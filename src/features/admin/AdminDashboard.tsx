@@ -829,13 +829,19 @@ export default function AdminDashboard() {
     setIsGpxModalOpen(true);
   };
 
-  const stats = statsRes?.data || { totalBookings: 0, totalRevenue: 0, totalHikers: 0, openRoutes: 1, pendingReviews: 0 };
-  const bookings = bookingsRes?.data || [];
-  const articles = articlesRes?.data || [];
-  const galleries = galleriesRes?.data || [];
-  const reviews = reviewsRes?.data || [];
-  const routes = publicRes?.data?.routes || [];
-  const packages = publicRes?.data?.bookingPackages || [];
+  const stats = {
+    totalBookings: statsRes?.data?.totalBookings ?? 0,
+    totalRevenue: statsRes?.data?.totalRevenue ?? 0,
+    totalHikers: statsRes?.data?.totalHikers ?? 0,
+    openRoutes: statsRes?.data?.openRoutes ?? 1,
+    pendingReviews: statsRes?.data?.pendingReviews ?? 0,
+  };
+  const bookings = Array.isArray(bookingsRes?.data) ? bookingsRes.data : Array.isArray(bookingsRes) ? bookingsRes : [];
+  const articles = Array.isArray(articlesRes?.data) ? articlesRes.data : Array.isArray(articlesRes) ? articlesRes : [];
+  const galleries = Array.isArray(galleriesRes?.data) ? galleriesRes.data : Array.isArray(galleriesRes) ? galleriesRes : [];
+  const reviews = Array.isArray(reviewsRes?.data) ? reviewsRes.data : Array.isArray(reviewsRes) ? reviewsRes : [];
+  const routes = Array.isArray(publicRes?.data?.routes) ? publicRes.data.routes : [];
+  const packages = Array.isArray(publicRes?.data?.bookingPackages) ? publicRes.data.bookingPackages : [];
 
   const mainRoute = routes[0] || {
     id: 'default-route',
@@ -861,19 +867,28 @@ export default function AdminDashboard() {
 
   // Filtered Bookings
   const filteredBookings = bookings.filter((b: any) => {
+    if (!b) return false;
     const matchesStatus = bookingFilterStatus === 'ALL' || b.status === bookingFilterStatus;
-    const matchesSearch = !bookingSearch || 
-      b.kode_booking.toLowerCase().includes(bookingSearch.toLowerCase()) ||
-      b.nama_ketua.toLowerCase().includes(bookingSearch.toLowerCase()) ||
-      (b.no_hp && b.no_hp.includes(bookingSearch));
+    const kode = b.kode_booking || '';
+    const nama = b.nama_ketua || '';
+    const hp = b.no_hp || '';
+    const search = bookingSearch ? bookingSearch.toLowerCase() : '';
+    const matchesSearch = !search || 
+      kode.toLowerCase().includes(search) ||
+      nama.toLowerCase().includes(search) ||
+      hp.includes(search);
     return matchesStatus && matchesSearch;
   });
 
   // Filtered Articles
   const filteredArticles = articles.filter((a: any) => {
-    return !articleSearch || 
-      a.judul.toLowerCase().includes(articleSearch.toLowerCase()) ||
-      (a.category?.nama_kategori && a.category.nama_kategori.toLowerCase().includes(articleSearch.toLowerCase()));
+    if (!a) return false;
+    const search = articleSearch ? articleSearch.toLowerCase() : '';
+    const judul = a.judul || '';
+    const cat = a.category?.nama_kategori || '';
+    return !search || 
+      judul.toLowerCase().includes(search) ||
+      cat.toLowerCase().includes(search);
   });
 
   const isLoading = statsLoading || bookingsLoading || articlesLoading || galleriesLoading || reviewsLoading || publicLoading;
@@ -1102,7 +1117,7 @@ export default function AdminDashboard() {
               <div className="bg-white dark:bg-[#F4F0E8] p-5 rounded-3xl border border-[#e7e5e4] shadow-xs flex items-center justify-between">
                 <div>
                   <span className="text-[10px] font-bold text-[#707070] uppercase">Total Pendaki Terdaftar</span>
-                  <p className="text-2xl font-black text-[#050505] mt-1">{stats.totalHikers.toLocaleString('id-ID')} Orang</p>
+                  <p className="text-2xl font-black text-[#050505] mt-1">{(stats.totalHikers || 0).toLocaleString('id-ID')} Orang</p>
                   <span className="text-[10px] text-emerald-700 font-bold">✓ Kuota terpantau</span>
                 </div>
                 <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-[#0D5C3A] flex items-center justify-center">
@@ -1113,7 +1128,7 @@ export default function AdminDashboard() {
               <div className="bg-white dark:bg-[#F4F0E8] p-5 rounded-3xl border border-[#e7e5e4] shadow-xs flex items-center justify-between">
                 <div>
                   <span className="text-[10px] font-bold text-[#707070] uppercase">Total Transaksi Booking</span>
-                  <p className="text-2xl font-black text-[#050505] mt-1">{stats.totalBookings} Reservasi</p>
+                  <p className="text-2xl font-black text-[#050505] mt-1">{stats.totalBookings || 0} Reservasi</p>
                   <span className="text-[10px] text-[#707070]">Semua rombongan</span>
                 </div>
                 <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center">
@@ -1124,7 +1139,7 @@ export default function AdminDashboard() {
               <div className="bg-white dark:bg-[#F4F0E8] p-5 rounded-3xl border border-[#e7e5e4] shadow-xs flex items-center justify-between">
                 <div>
                   <span className="text-[10px] font-bold text-[#707070] uppercase">Pendapatan Retribusi SIMAKSI</span>
-                  <p className="text-2xl font-black text-[#0D5C3A] mt-1">Rp {stats.totalRevenue.toLocaleString('id-ID')}</p>
+                  <p className="text-2xl font-black text-[#0D5C3A] mt-1">Rp {(stats.totalRevenue || 0).toLocaleString('id-ID')}</p>
                   <span className="text-[10px] text-emerald-700 font-bold">Lunas terverifikasi</span>
                 </div>
                 <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-800 flex items-center justify-center">
