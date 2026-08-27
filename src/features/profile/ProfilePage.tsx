@@ -886,9 +886,6 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen pt-[var(--header-height)] bg-[#FAF8F5] dark:bg-[#FAF8F5]">
-      {/* ===== INTERACTIVE HIKING TRAIL MAP APP ===== */}
-      <HikingTrailMapApp />
-
       {/* ===== MAIN CONTENT - MUNCAK.ID STYLE ===== */}
       <section className="section-padding">
         <div className="container-app max-w-6xl">
@@ -962,7 +959,7 @@ export default function ProfilePage() {
               </div>
 
               {/* Tab Navigation Menu */}
-              <div className="flex flex-wrap items-center gap-3 mb-8">
+              <div className="flex flex-wrap items-center gap-3 mb-6">
                 <button 
                   onClick={() => {
                     setShowSegmentDetails(prev => !prev);
@@ -982,7 +979,9 @@ export default function ProfilePage() {
                 </button>
               </div>
 
-              {showSegmentDetails && (
+              {!showSegmentDetails ? (
+                <HikingTrailMapApp />
+              ) : (
                 /* ===== ROUTE SEGMENTATION DASHBOARD ===== */
                 <div className="space-y-6">
 
