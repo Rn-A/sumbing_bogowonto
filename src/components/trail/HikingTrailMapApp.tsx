@@ -253,16 +253,16 @@ export default function HikingTrailMapApp() {
     // Custom Zoom Controls at top-right
     L.control.zoom({ position: 'topright' }).addTo(map);
 
-    // Build Polyline Trail through ALL points (checkpoints + landmarks) sorted by distance
+    // Build Polyline Trail through ALL points (checkpoints + landmarks) as initial fallback
     const allRoutePoints = [
       ...CHECKPOINTS.map(c => ({ lat: c.lat, lng: c.lng, distance: c.distance })),
       ...LANDMARKS.map(l => ({ lat: l.lat, lng: l.lng, distance: l.distance })),
     ].sort((a, b) => a.distance - b.distance);
 
-    const routePoints: L.LatLngExpression[] = allRoutePoints.map(p => [p.lat, p.lng] as [number, number]);
+    const fallbackPoints: L.LatLngExpression[] = allRoutePoints.map(p => [p.lat, p.lng] as [number, number]);
 
     // Orange glow polyline trail
-    const shadowLine = L.polyline(routePoints, {
+    const shadowLine = L.polyline(fallbackPoints, {
       color: '#C2410C',
       weight: 10,
       opacity: 0.4,
@@ -270,7 +270,7 @@ export default function HikingTrailMapApp() {
       lineJoin: 'round',
     }).addTo(map);
 
-    const mainLine = L.polyline(routePoints, {
+    const mainLine = L.polyline(fallbackPoints, {
       color: '#F97316',
       weight: 5,
       opacity: 0.95,
@@ -280,6 +280,32 @@ export default function HikingTrailMapApp() {
 
     // Fit map bounds to show complete trail
     map.fitBounds(mainLine.getBounds(), { padding: [40, 40] });
+
+    // Fetch and parse exact GPX track from /gpx/ZeppWonosobo Lari trail.gpx
+    fetch(encodeURI('/gpx/ZeppWonosobo Lari trail.gpx'))
+      .then(res => res.text())
+      .then(xmlText => {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+        const trkpts = xmlDoc.getElementsByTagName('trkpt');
+        const gpxCoords: [number, number][] = [];
+        for (let i = 0; i < trkpts.length; i++) {
+          const pt = trkpts[i];
+          const lat = parseFloat(pt.getAttribute('lat') || '');
+          const lon = parseFloat(pt.getAttribute('lon') || '');
+          if (!isNaN(lat) && !isNaN(lon)) {
+            gpxCoords.push([lat, lon]);
+          }
+        }
+        if (gpxCoords.length > 0) {
+          shadowLine.setLatLngs(gpxCoords as L.LatLngExpression[]);
+          mainLine.setLatLngs(gpxCoords as L.LatLngExpression[]);
+          map.fitBounds(mainLine.getBounds(), { padding: [40, 40] });
+        }
+      })
+      .catch(err => {
+        console.warn('Could not load GPX file for map, falling back to waypoint line:', err);
+      });
 
     // Add Checkpoint Markers with elevation labels
     CHECKPOINTS.forEach((cp) => {
@@ -434,10 +460,10 @@ export default function HikingTrailMapApp() {
     }
   };
 
-  // GPX Download Placeholder Action
+  // GPX Download Action
   const handleDownloadGpx = () => {
     const link = document.createElement('a');
-    link.href = '/gpx/sumbing_via_pencar.gpx';
+    link.href = encodeURI('/gpx/ZeppWonosobo Lari trail.gpx');
     link.download = 'Sumbing_Via_Basecamp_Bogowonto_Official_Trail.gpx';
     document.body.appendChild(link);
     link.click();
