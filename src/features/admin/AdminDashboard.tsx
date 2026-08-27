@@ -405,8 +405,10 @@ export default function AdminDashboard() {
         const fileData = reader.result as string;
         try {
           const res = await uploadFile({ fileName: file.name, fileData });
-          if (res.success && res.url) {
+          if (res.success && res.url && (!res.url.startsWith('/uploads') || !window.location.hostname.includes('vercel.app'))) {
             onSuccess(res.url, file.name, gpxStats);
+          } else if (res.success) {
+            onSuccess(fileData, file.name, gpxStats);
           } else {
             alert(res.error || 'Gagal mengunggah berkas.');
           }

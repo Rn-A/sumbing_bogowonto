@@ -148,7 +148,7 @@ export default function HomeCmsManager() {
         const base64Data = reader.result as string;
         try {
           const res = await uploadFile({ fileName: file.name, fileData: base64Data });
-          if (res.success && res.url) {
+          if (res.success && res.url && (!res.url.startsWith('/uploads') || !window.location.hostname.includes('vercel.app'))) {
             onSuccess(res.url);
           } else {
             onSuccess(base64Data);

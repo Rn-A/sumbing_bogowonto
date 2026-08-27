@@ -1626,6 +1626,10 @@ app.post('/api/upload', authenticateAdmin, async (req: any, res: any) => {
       const { put } = await import('@vercel/blob');
       const blob = await put(`uploads/${uniqueFileName}`, buffer, { access: 'public' });
       res.json({ success: true, url: blob.url });
+    } else if (process.env.VERCEL) {
+      // Vercel serverless containers do not persist /uploads to disk.
+      // Return the Base64 Data URL so uploaded images display 100% reliably.
+      res.json({ success: true, url: fileData });
     } else {
       const filePath = path.join(uploadsDir, uniqueFileName);
       fs.writeFileSync(filePath, buffer);
