@@ -577,6 +577,13 @@ app.post('/api/bookings', async (req, res) => {
             expired_at: isCash ? null : new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hour expiry for online payment
           },
         },
+        ticket: {
+          create: {
+            kode_tiket: `TKT-${kodeBooking}`,
+            qr_code_url: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${kodeBooking}`,
+            status_kehadiran: 'Belum Check-In',
+          },
+        },
       },
       include: {
         package: { include: { route: true } },
@@ -939,6 +946,19 @@ app.get('/api/bookings/check/:code', async (req, res) => {
 
     if (!booking) {
       return res.status(404).json({ success: false, error: 'Data tiket/reservasi tidak ditemukan. Pastikan kode booking atau nomor WhatsApp sudah benar.' });
+    }
+
+    // If ticket record doesn't exist yet for this booking, auto-provision it
+    if (!booking.ticket) {
+      const createdTicket = await prisma.ticket.create({
+        data: {
+          booking_id: booking.id,
+          kode_tiket: `TKT-${booking.kode_booking}`,
+          qr_code_url: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${booking.kode_booking}`,
+          status_kehadiran: 'Belum Check-In',
+        },
+      });
+      (booking as any).ticket = createdTicket;
     }
 
     res.json({ success: true, data: booking });

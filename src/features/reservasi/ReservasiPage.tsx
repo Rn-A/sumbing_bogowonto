@@ -1169,18 +1169,12 @@ export default function ReservasiPage() {
 
                       {/* Right: QR Code */}
                       <div className="md:col-span-4 flex flex-col items-center justify-center p-6 bg-[#FAF8F5] rounded-2xl border border-dashed border-[#e7e5e4] text-center">
-                        <div className="w-40 h-40 bg-white p-2.5 rounded-2xl shadow-sm border border-[#e7e5e4] mb-3">
-                          {searchedBooking.ticket?.qr_code_url ? (
-                            <img
-                              src={searchedBooking.ticket.qr_code_url}
-                              alt="QR Code Tiket"
-                              className="w-full h-full object-contain"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <QrCode className="w-20 h-20 text-slate-400" />
-                            </div>
-                          )}
+                        <div className="w-40 h-40 bg-white p-2.5 rounded-2xl shadow-sm border border-[#e7e5e4] mb-3 flex items-center justify-center">
+                          <img
+                            src={searchedBooking.ticket?.qr_code_url || `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${searchedBooking.kode_booking}`}
+                            alt={`QR Code Tiket ${searchedBooking.kode_booking}`}
+                            className="w-full h-full object-contain"
+                          />
                         </div>
                         <span className="text-[10px] font-black text-[#0D5C3A] uppercase tracking-wider">Scan di Loket Basecamp</span>
                         <p className="text-[10px] text-[#707070] mt-0.5">Tunjukkan QR ini saat verifikasi fisik</p>
@@ -1341,18 +1335,12 @@ export default function ReservasiPage() {
 
                       {/* QR Code Section */}
                       <div className="py-3 text-center border-b border-dashed border-black flex flex-col items-center">
-                        <div className="w-32 h-32 bg-white p-1 border border-black mb-1">
-                          {searchedBooking.ticket?.qr_code_url ? (
-                            <img
-                              src={searchedBooking.ticket.qr_code_url}
-                              alt="QR Code Karcis"
-                              className="w-full h-full object-contain"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <QrCode className="w-16 h-16 text-black" />
-                            </div>
-                          )}
+                        <div className="w-32 h-32 bg-white p-1 border border-black mb-1 flex items-center justify-center">
+                          <img
+                            src={searchedBooking.ticket?.qr_code_url || `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${searchedBooking.kode_booking}`}
+                            alt={`QR Code Karcis ${searchedBooking.kode_booking}`}
+                            className="w-full h-full object-contain"
+                          />
                         </div>
                         <span className="text-[9px] font-black tracking-widest uppercase">
                           [ SCAN DI POS BASECAMP ]
