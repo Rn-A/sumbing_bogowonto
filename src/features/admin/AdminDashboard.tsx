@@ -831,16 +831,6 @@ export default function AdminDashboard() {
     });
   };
 
-  const resetGalleryForm = () => {
-    setGalleryForm({
-      judul: '',
-      category_name: 'Lanskap & Puncak',
-      deskripsi: '',
-      url_media: '',
-      is_featured: false,
-    });
-  };
-
   const handleOpenEditArticle = (article: any) => {
     setEditingArticle(article);
     setArticleForm({
