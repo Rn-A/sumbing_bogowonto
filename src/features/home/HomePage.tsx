@@ -103,10 +103,24 @@ export default function HomePage() {
   const openRoutesCount = routes.filter((r: any) => r.status === 'Buka').length;
   const isMountainOpen = openRoutesCount > 0;
 
+  const sanitizeImageUrl = (url?: string, fallbackUrl?: string) => {
+    const defaultFallback = fallbackUrl || 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1920&q=80';
+    if (!url) return defaultFallback;
+    if (url.startsWith('/uploads') && typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
+      return defaultFallback;
+    }
+    return url;
+  };
+
   // 1. Hero Carousel Slides
-  const heroSlides = (settings.home_hero_slides && Array.isArray(settings.home_hero_slides) && settings.home_hero_slides.length > 0)
+  const rawHeroSlides = (settings.home_hero_slides && Array.isArray(settings.home_hero_slides) && settings.home_hero_slides.length > 0)
     ? settings.home_hero_slides
     : CAROUSEL_SLIDES;
+
+  const heroSlides = rawHeroSlides.map((slide: any, idx: number) => ({
+    ...slide,
+    image: sanitizeImageUrl(slide.image, CAROUSEL_SLIDES[idx % CAROUSEL_SLIDES.length]?.image)
+  }));
 
   const currentHero = heroSlides[currentSlide % heroSlides.length] || heroSlides[0];
 
@@ -338,9 +352,9 @@ export default function HomePage() {
         developerText={aboutData.devDesc}
         contactEmail={aboutData.contactValue}
         images={{
-          tall: aboutData.imgLeft || 'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=800&q=80',
-          topRight: aboutData.imgTopRight || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80',
-          bottomRight: aboutData.imgBottomRight || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80'
+          tall: sanitizeImageUrl(aboutData.imgLeft, 'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=800&q=80'),
+          topRight: sanitizeImageUrl(aboutData.imgTopRight, 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80'),
+          bottomRight: sanitizeImageUrl(aboutData.imgBottomRight, 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80')
         }}
       />
 

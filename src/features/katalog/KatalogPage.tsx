@@ -39,6 +39,9 @@ export default function KatalogPage() {
   // Filtered Products
   let itemsToDisplay: any[] = [];
 
+  const settings = publicData.settings || {};
+  const catalogCustomData = settings.catalog_cms_data || {};
+
   if (activeTab === 'paket') {
     // Packages are stored in bookingPackages table, formatted to match catalog product structure
     itemsToDisplay = bookingPackages.map((p: any) => ({
@@ -52,6 +55,17 @@ export default function KatalogPage() {
       is_featured: p.is_featured,
       kontak_wa: '+6281234567890', // Default basecamp WA
       fasilitas: typeof p.include === 'string' ? JSON.parse(p.include) : (p.include || []),
+    }));
+  } else if (catalogCustomData[`${activeTab}Items`] && Array.isArray(catalogCustomData[`${activeTab}Items`])) {
+    itemsToDisplay = catalogCustomData[`${activeTab}Items`].map((it: any) => ({
+      id: it.id,
+      nama_produk: it.nama,
+      deskripsi: it.deskripsi,
+      harga: it.harga,
+      satuan: it.satuan,
+      foto: it.gambar,
+      is_available: true,
+      kontak_wa: '+6281234567890',
     }));
   } else {
     // Normal catalog products filtered by category type
