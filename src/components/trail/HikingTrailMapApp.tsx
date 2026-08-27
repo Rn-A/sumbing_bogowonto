@@ -253,56 +253,72 @@ export default function HikingTrailMapApp() {
     // Custom Zoom Controls at top-right
     L.control.zoom({ position: 'topright' }).addTo(map);
 
-    // Build Polyline Trail
-    const routePoints: L.LatLngExpression[] = [
-      ...CHECKPOINTS.map(c => [c.lat, c.lng] as [number, number]),
-    ];
+    // Build Polyline Trail through ALL points (checkpoints + landmarks) sorted by distance
+    const allRoutePoints = [
+      ...CHECKPOINTS.map(c => ({ lat: c.lat, lng: c.lng, distance: c.distance })),
+      ...LANDMARKS.map(l => ({ lat: l.lat, lng: l.lng, distance: l.distance })),
+    ].sort((a, b) => a.distance - b.distance);
 
-    // Neon Emerald polyline with glow
+    const routePoints: L.LatLngExpression[] = allRoutePoints.map(p => [p.lat, p.lng] as [number, number]);
+
+    // Orange glow polyline trail
     const shadowLine = L.polyline(routePoints, {
-      color: '#064E3B',
-      weight: 8,
-      opacity: 0.5,
+      color: '#C2410C',
+      weight: 10,
+      opacity: 0.4,
+      lineCap: 'round',
+      lineJoin: 'round',
     }).addTo(map);
 
     const mainLine = L.polyline(routePoints, {
-      color: '#10B981',
-      weight: 4,
-      dashArray: '6, 8',
+      color: '#F97316',
+      weight: 5,
       opacity: 0.95,
+      lineCap: 'round',
+      lineJoin: 'round',
     }).addTo(map);
 
     // Fit map bounds to show complete trail
     map.fitBounds(mainLine.getBounds(), { padding: [40, 40] });
 
-    // Add Checkpoint Markers
+    // Add Checkpoint Markers with elevation labels
     CHECKPOINTS.forEach((cp) => {
       const isSummit = cp.type === 'summit';
       const isBasecamp = cp.type === 'basecamp';
       const isCamp = cp.type === 'camp';
 
-      const bgGradient = isSummit 
-        ? 'bg-amber-500 text-slate-950 border-amber-300 shadow-amber-500/40' 
+      // Marker circle colors
+      const markerBg = isSummit 
+        ? 'background:linear-gradient(135deg,#F59E0B,#D97706);color:#1a1a2e;border-color:#FCD34D;'
         : isBasecamp 
-          ? 'bg-emerald-600 text-white border-emerald-300 shadow-emerald-600/40' 
+          ? 'background:linear-gradient(135deg,#059669,#047857);color:#fff;border-color:#6EE7B7;'
           : isCamp 
-            ? 'bg-indigo-600 text-white border-indigo-300 shadow-indigo-600/40'
-            : 'bg-emerald-900/90 text-emerald-200 border-emerald-500/60 shadow-black/50';
+            ? 'background:linear-gradient(135deg,#7C3AED,#6D28D9);color:#fff;border-color:#C4B5FD;'
+            : 'background:linear-gradient(135deg,#F97316,#EA580C);color:#fff;border-color:#FDBA74;';
+
+      // Elevation badge color
+      const elevBadgeBg = isSummit
+        ? 'background:#78350F;color:#FDE68A;border-color:#B45309;'
+        : isBasecamp
+          ? 'background:#064E3B;color:#6EE7B7;border-color:#047857;'
+          : 'background:#1E293B;color:#F1F5F9;border-color:#475569;';
 
       const iconHtml = `
-        <div class="relative group cursor-pointer">
-          <div class="w-9 h-9 rounded-2xl ${bgGradient} border-2 shadow-lg flex items-center justify-center font-black text-sm transition-transform duration-200 group-hover:scale-125">
-            <span>${cp.code}</span>
+        <div style="position:relative;display:flex;flex-direction:column;align-items:center;cursor:pointer;">
+          <div style="width:36px;height:36px;border-radius:12px;${markerBg}border:2.5px solid;box-shadow:0 4px 12px rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;font-family:system-ui;transition:transform 0.2s;z-index:2;">
+            ${isSummit ? '▲' : cp.code}
           </div>
-          <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-emerald-400 rotate-45 border-r border-b border-black/20"></div>
+          <div style="margin-top:2px;padding:1px 6px;border-radius:8px;${elevBadgeBg}border:1px solid;font-size:9px;font-weight:800;font-family:system-ui;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.3);z-index:1;">
+            ${cp.elevation} m
+          </div>
         </div>
       `;
 
       const customIcon = L.divIcon({
         html: iconHtml,
         className: 'custom-checkpoint-marker',
-        iconSize: [36, 36],
-        iconAnchor: [18, 36],
+        iconSize: [44, 56],
+        iconAnchor: [22, 48],
       });
 
       const marker = L.marker([cp.lat, cp.lng], { icon: customIcon }).addTo(map);
@@ -325,20 +341,33 @@ export default function HikingTrailMapApp() {
         </div>
       `;
 
-      marker.bindPopup(popupContent, { offset: [0, -28] });
+      marker.bindPopup(popupContent, { offset: [0, -40] });
       marker.on('click', () => setSelectedCheckpoint(cp));
       markersRef.current[cp.id] = marker;
     });
 
-    // Add Intermediate Landmark Markers
+    // Add Intermediate Landmark Markers with name + elevation labels
     LANDMARKS.forEach((lm) => {
       const isWater = lm.type === 'water';
-      const iconEmoji = isWater ? '💧' : '📍';
+      const isPuncakBogo = lm.name.includes('Puncak Bogowonto');
+
+      // Marker circle styling
+      const markerStyle = isWater
+        ? 'background:linear-gradient(135deg,#06B6D4,#0891B2);color:#fff;border-color:#67E8F9;'
+        : isPuncakBogo
+          ? 'background:linear-gradient(135deg,#F59E0B,#D97706);color:#1a1a2e;border-color:#FCD34D;'
+          : 'background:linear-gradient(135deg,#10B981,#059669);color:#fff;border-color:#6EE7B7;';
+
+      const lmIcon = isWater ? '💧' : isPuncakBogo ? '▲' : '◆';
 
       const lmIconHtml = `
-        <div class="relative group cursor-pointer">
-          <div class="w-6 h-6 rounded-full ${isWater ? 'bg-cyan-500 border-cyan-200 text-white shadow-cyan-500/50' : 'bg-slate-800/90 border-slate-600 text-amber-300'} border shadow-md flex items-center justify-center text-[10px] font-bold transition-transform duration-200 group-hover:scale-125">
-            <span>${iconEmoji}</span>
+        <div style="position:relative;display:flex;flex-direction:column;align-items:center;cursor:pointer;">
+          <div style="width:26px;height:26px;border-radius:50%;${markerStyle}border:2px solid;box-shadow:0 3px 10px rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;font-family:system-ui;z-index:2;">
+            ${lmIcon}
+          </div>
+          <div style="margin-top:2px;padding:1px 5px;border-radius:6px;background:rgba(15,23,42,0.92);color:#E2E8F0;border:1px solid #475569;font-size:9px;font-weight:700;font-family:system-ui;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.4);z-index:1;text-align:center;line-height:1.3;">
+            <span style="display:block;font-size:8px;color:#94A3B8;">${lm.name}</span>
+            <span style="color:#FDE68A;font-weight:900;">${lm.elevation} m</span>
           </div>
         </div>
       `;
@@ -346,16 +375,16 @@ export default function HikingTrailMapApp() {
       const lmCustomIcon = L.divIcon({
         html: lmIconHtml,
         className: 'custom-landmark-marker',
-        iconSize: [24, 24],
-        iconAnchor: [12, 12],
+        iconSize: [30, 52],
+        iconAnchor: [15, 44],
       });
 
       const lmMarker = L.marker([lm.lat, lm.lng], { icon: lmCustomIcon }).addTo(map);
 
       const lmPopup = `
-        <div class="p-2 font-sans">
+        <div class="p-2.5 font-sans max-w-[200px]">
           <div class="flex items-center gap-1.5 font-bold text-xs ${isWater ? 'text-cyan-700' : 'text-slate-800'}">
-            <span>${iconEmoji}</span>
+            <span>${isWater ? '💧' : '📍'}</span>
             <span>${lm.name}</span>
           </div>
           <div class="text-[10px] text-slate-500 font-medium mt-0.5">
@@ -364,7 +393,7 @@ export default function HikingTrailMapApp() {
         </div>
       `;
 
-      lmMarker.bindPopup(lmPopup, { offset: [0, -10] });
+      lmMarker.bindPopup(lmPopup, { offset: [0, -36] });
     });
 
     mapInstanceRef.current = map;
@@ -523,7 +552,7 @@ export default function HikingTrailMapApp() {
                 <div className="flex items-center gap-1.5"><span>⛺</span> <span>Camp Area</span></div>
                 <div className="flex items-center gap-1.5"><span>💧</span> <span>Mata Air</span></div>
                 <div className="flex items-center gap-1.5"><span>🏔</span> <span>Puncak</span></div>
-                <div className="flex items-center gap-1.5"><span className="w-3 h-1 bg-emerald-400 rounded-full"></span> <span>Jalur Pendakian</span></div>
+                <div className="flex items-center gap-1.5"><span className="w-3 h-1 bg-orange-500 rounded-full"></span> <span>Jalur Pendakian</span></div>
               </div>
             </div>
           </div>

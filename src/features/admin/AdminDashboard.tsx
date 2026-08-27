@@ -400,25 +400,58 @@ export default function AdminDashboard() {
         gpxStats = await parsePromise;
       }
 
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const fileData = reader.result as string;
-        try {
-          const res = await uploadFile({ fileName: file.name, fileData });
-          if (res.success && res.url && (!res.url.startsWith('/uploads') || !window.location.hostname.includes('vercel.app'))) {
-            onSuccess(res.url, file.name, gpxStats);
-          } else if (res.success) {
-            onSuccess(fileData, file.name, gpxStats);
-          } else {
-            alert(res.error || 'Gagal mengunggah berkas.');
-          }
-        } catch (err: any) {
-          alert(err.response?.data?.error || 'Gagal mengunggah berkas.');
-        } finally {
-          setIsUploading(false);
+      const fileData = await (async () => {
+        if (file.type.startsWith('image/')) {
+          return new Promise<string>((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+              let w = img.width, h = img.height;
+              const maxDim = 1200;
+              if (w > maxDim || h > maxDim) {
+                if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+                else { w = Math.round((w * maxDim) / h); h = maxDim; }
+              }
+              const canvas = document.createElement('canvas');
+              canvas.width = w; canvas.height = h;
+              const ctx = canvas.getContext('2d');
+              if (ctx) {
+                ctx.drawImage(img, 0, 0, w, h);
+                resolve(canvas.toDataURL('image/jpeg', 0.8));
+                return;
+              }
+              const r = new FileReader();
+              r.onload = () => resolve(r.result as string);
+              r.readAsDataURL(file);
+            };
+            img.onerror = () => {
+              const r = new FileReader();
+              r.onload = () => resolve(r.result as string);
+              r.readAsDataURL(file);
+            };
+            img.src = URL.createObjectURL(file);
+          });
         }
-      };
-      reader.readAsDataURL(file);
+        return new Promise<string>((resolve) => {
+          const r = new FileReader();
+          r.onload = () => resolve(r.result as string);
+          r.readAsDataURL(file);
+        });
+      })();
+
+      try {
+        const res = await uploadFile({ fileName: file.name, fileData });
+        if (res.success && res.url && (!res.url.startsWith('/uploads') || !window.location.hostname.includes('vercel.app'))) {
+          onSuccess(res.url, file.name, gpxStats);
+        } else if (res.success) {
+          onSuccess(fileData, file.name, gpxStats);
+        } else {
+          onSuccess(fileData, file.name, gpxStats);
+        }
+      } catch (err: any) {
+        onSuccess(fileData, file.name, gpxStats);
+      } finally {
+        setIsUploading(false);
+      }
     } catch (err) {
       console.error(err);
       setIsUploading(false);

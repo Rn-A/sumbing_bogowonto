@@ -20,7 +20,7 @@ model User {
   password      String   @db.VarChar(255)
   nama_lengkap  String   @db.VarChar(100)
   phone         String?  @db.VarChar(20)
-  avatar        String?  @db.VarChar(500)
+  avatar        String?  @db.LongText
   role_id       String
   is_active     Boolean  @default(true)
   created_at    DateTime @default(now())
@@ -74,7 +74,7 @@ model Article {
   slug            String   @unique @db.VarChar(255)
   ringkasan       String?  @db.Text
   konten          String   @db.LongText
-  foto_sampul     String?  @db.VarChar(500)
+  foto_sampul     String?  @db.LongText
   status          String   @default("Draft") @db.VarChar(20) // Draft, Terbit
   is_featured     Boolean  @default(false)
   views           Int      @default(0)
@@ -112,7 +112,7 @@ model Gallery {
   category_id     String
   judul           String   @db.VarChar(255)
   deskripsi       String?  @db.Text
-  url_media       String   @db.VarChar(500) // Image or video URL
+  url_media       String   @db.LongText // Image or video URL
   media_type      String   @default("image") @db.VarChar(10) // image, video
   is_featured     Boolean  @default(false)
   urutan          Int      @default(0)
@@ -139,7 +139,7 @@ model Route {
   elevasi_start   Int       @default(0)
   elevasi_puncak  Int       @default(0)
   status          String    @default("Buka") @db.VarChar(20) // Buka, Tutup, Maintenance
-  foto_sampul     String?   @db.VarChar(500)
+  foto_sampul     String?   @db.LongText
   map_center_lat  Float?
   map_center_lng  Float?
   map_zoom        Int?      @default(13)
@@ -183,7 +183,7 @@ model Post {
   latitude        Float?
   longitude       Float?
   fasilitas       Json?    // JSON array: ["air", "shelter", "toilet"]
-  foto            String?  @db.VarChar(500)
+  foto            String?  @db.LongText
   urutan          Int      @default(0)
   created_at      DateTime @default(now())
 
@@ -238,7 +238,7 @@ model Review {
   email           String?  @db.VarChar(255)
   rating          Int      @default(5) // 1-5
   komentar        String   @db.Text
-  foto            String?  @db.VarChar(500)
+  foto            String?  @db.LongText
   is_approved     Boolean  @default(false)
   is_featured     Boolean  @default(false)
   created_at      DateTime @default(now())
@@ -276,7 +276,7 @@ model Product {
   harga           Int      @default(0)
   harga_diskon    Int?
   satuan          String?  @db.VarChar(50) // /malam, /hari, /orang, /trip
-  foto            String?  @db.VarChar(500)
+  foto            String?  @db.LongText
   foto_gallery    Json?    // JSON array of image URLs
   stok            Int?
   rating          Float?   @default(0)
@@ -329,7 +329,7 @@ model BookingPackage {
   durasi_hari     Int       @default(2)
   include         Json?     // JSON array: ["guide", "porter", "tenda", ...]
   exclude         Json?     // JSON array
-  foto            String?   @db.VarChar(500)
+  foto            String?   @db.LongText
   is_available    Boolean   @default(true)
   is_featured     Boolean   @default(false)
   urutan          Int       @default(0)
@@ -382,7 +382,7 @@ model BookingMember {
   jenis_kelamin   String?  @db.VarChar(10)
   umur            Int?
   no_hp           String?  @db.VarChar(20)
-  foto_identitas  String?  @db.VarChar(500) // URL to uploaded ID photo
+  foto_identitas  String?  @db.LongText // URL to uploaded ID photo
   is_ketua        Boolean  @default(false)
   created_at      DateTime @default(now())
 
