@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchAllPublicData, submitReview } from '../../services/api';
+import HikingTrailMapApp from '../../components/trail/HikingTrailMapApp';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { 
@@ -832,25 +833,8 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen pt-[var(--header-height)] bg-[#FAF8F5] dark:bg-[#FAF8F5]">
-      {/* ===== HERO SECTION ===== */}
-      <section className="relative py-20 bg-sky-gradient overflow-hidden">
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="container-app relative z-10 text-center text-white">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <p className="text-[#0D5C3A] text-xs font-bold uppercase tracking-widest mb-3">Informasi Jalur & Bogowonto</p>
-            <h1 className="font-display font-black text-4xl sm:text-5xl mb-4">
-              Jalur Pendakian Gunung Sumbing Via Pencar
-            </h1>
-            <p className="text-slate-200 text-sm max-w-xl mx-auto leading-relaxed">
-              Pusat informasi resmi dan panduan lengkap pendakian Gunung Sumbing melalui Basecamp Bogowonto (Pencar Atas, Kalikajar, Wonosobo).
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      {/* ===== INTERACTIVE HIKING TRAIL MAP APP ===== */}
+      <HikingTrailMapApp />
 
       {/* ===== MAIN CONTENT - MUNCAK.ID STYLE ===== */}
       <section className="section-padding">

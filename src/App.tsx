@@ -9,6 +9,7 @@ import Footer from './components/layout/Footer';
 // Pages
 import HomePage from './features/home/HomePage';
 import ProfilePage from './features/profile/ProfilePage';
+import HikingTrailMapApp from './components/trail/HikingTrailMapApp';
 import KatalogPage from './features/katalog/KatalogPage';
 import BeritaPage from './features/berita/BeritaPage';
 import ReservasiPage from './features/reservasi/ReservasiPage';
@@ -119,6 +120,7 @@ export default function App() {
             <Routes location={location}>
               <Route path="/" element={<HomePage />} />
               <Route path="/profil" element={<ProfilePage />} />
+              <Route path="/peta-jalur" element={<HikingTrailMapApp />} />
               <Route path="/katalog" element={<KatalogPage />} />
               <Route path="/berita" element={<BeritaPage />} />
               <Route path="/reservasi" element={<ReservasiPage />} />
