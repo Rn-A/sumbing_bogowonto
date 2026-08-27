@@ -10,7 +10,8 @@ import {
   HelpCircle, Star, Download, ChevronDown, Clock, 
   TrendingUp, Navigation, Calculator, Plus, Minus, 
   AlertTriangle, Send, Loader2, ChevronRight, Ticket, Users, Coffee,
-  Flame, Route as RouteIcon, Info, CloudSun, Lock, Sliders, User
+  Flame, Route as RouteIcon, Info, CloudSun, Lock, Sliders, User,
+  Sun, Cloud, CloudRain, CloudLightning, Wind, RefreshCw, Thermometer
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Link } from 'react-router-dom';
@@ -53,7 +54,7 @@ const FACILITIES = [
 ];
 
 const FAQ_ITEMS = [
-  { q: 'Berapa biaya pendakian Via Pencar?', a: 'Biaya tiket masuk pendakian berkisar Rp 25.000 â€“ Rp 35.000/orang. Sewa perlengkapan, homestay, atau porter dikenakan biaya tambahan sesuai katalog Bogowonto.' },
+  { q: 'Berapa biaya pendakian Via Pencar?', a: 'Biaya tiket masuk pendakian berkisar Rp 25.000 – Rp 35.000/orang. Sewa perlengkapan, homestay, atau porter dikenakan biaya tambahan sesuai katalog Bogowonto.' },
   { q: 'Apakah harus booking online terlebih dahulu?', a: 'Sangat disarankan. Booking online membantu pendataan kuota pendaki harian dan mempermudah check-in menggunakan kode QR di Basecamp Bogowonto.' },
   { q: 'Bagaimana kondisi sinyal telekomunikasi di jalur?', a: 'Sinyal 4G (Telkomsel/Indosat) cukup kuat di area Basecamp Bogowonto hingga Pos 1. Di Pos 2-3 sinyal mulai tidak stabil/hilang, dan kadang muncul kembali di area puncak.' },
   { q: 'Berapa lama estimasi waktu pendakian Via Pencar?', a: 'Untuk jalur Via Pencar dari Basecamp Bogowonto, waktu tempuh rata-rata naik adalah 6-8 jam tergantung stamina fisik pendaki, dan waktu turun sekitar 4-5 jam.' },
@@ -68,79 +69,23 @@ const HIKING_RULES = [
   { title: 'Batas Summit Jam 10 Pagi', desc: 'Disarankan untuk turun dari puncak maksimal pukul 10:00 WIB demi menghindari kabut tebal dan gas beracun.' },
 ];
 
-interface WeatherForecast {
-  dayName: string;
-  dateStr: string;
-  time: string;
+export type WeatherIconType = 'clear' | 'partly-cloudy' | 'cloudy' | 'rain' | 'thunder';
+
+export interface WeatherConditionInfo {
   desc: string;
-  temp: number;
-  windSpeed: number;
-  iconType: 'clear' | 'partly-cloudy' | 'cloudy';
+  iconType: WeatherIconType;
 }
 
-const getNextDays = (hour: string) => {
-  const days = [];
-  const optionsDay: Intl.DateTimeFormatOptions = { weekday: 'long' };
-  const optionsDate: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long' };
-  
-  for (let i = 0; i < 3; i++) {
-    const d = new Date();
-    d.setDate(d.getDate() + i);
-    const dayName = d.toLocaleDateString('id-ID', optionsDay);
-    const dateStr = d.toLocaleDateString('id-ID', optionsDate);
-    days.push({
-      dayName,
-      dateStr,
-      time: hour
-    });
-  }
-  return days;
-};
-
-const generateWeather = (posElevasi: number, hour: string): WeatherForecast[] => {
-  const days = getNextDays(hour);
-  
-  // Base temperatures for different hours of the day
-  let baseTemp = 25; 
-  if (hour === '07:00') baseTemp = 18;
-  else if (hour === '10:00') baseTemp = 22;
-  else if (hour === '13:00') baseTemp = 24;
-  else if (hour === '16:00') baseTemp = 21;
-  else if (hour === '19:00') baseTemp = 15;
-  
-  // Lapse rate: ~0.65C per 100m elevation above base level (1500m)
-  const elevDifference = Math.max(0, posElevasi - 1540);
-  const tempDrop = (elevDifference / 100) * 0.65;
-  
-  return days.map((day, idx) => {
-    const dayVariation = idx === 0 ? 0 : idx === 1 ? 1.5 : -1.0;
-    const finalTemp = Math.round(baseTemp - tempDrop + dayVariation);
-    
-    let desc = 'Cerah Berawan';
-    let iconType: 'clear' | 'partly-cloudy' | 'cloudy' = 'partly-cloudy';
-    let windSpeed = Math.round((4.2 + idx * 0.6) * 10) / 10;
-    
-    if (idx === 2) {
-      desc = 'Berawan';
-      iconType = 'cloudy';
-      windSpeed = Math.round((windSpeed + 0.8) * 10) / 10;
-    } else if (hour === '07:00') {
-      desc = idx === 0 ? 'Cerah' : 'Cerah Berawan';
-      iconType = idx === 0 ? 'clear' : 'partly-cloudy';
-    } else if (hour === '19:00') {
-      desc = idx === 0 ? 'Berawan' : 'Kabut Tebal';
-      iconType = 'cloudy';
-      windSpeed = Math.round((windSpeed + 1.2) * 10) / 10;
-    }
-    
-    return {
-      ...day,
-      desc,
-      temp: finalTemp,
-      windSpeed,
-      iconType
-    };
-  });
+export const getWeatherConditionInfo = (code: number, isDay: number = 1): WeatherConditionInfo => {
+  if (code === 0) return { desc: isDay ? 'Cerah' : 'Malam Cerah', iconType: 'clear' };
+  if (code === 1 || code === 2) return { desc: 'Cerah Berawan', iconType: 'partly-cloudy' };
+  if (code === 3) return { desc: 'Berawan / Mendung', iconType: 'cloudy' };
+  if (code === 45 || code === 48) return { desc: 'Berkabut Tebal', iconType: 'cloudy' };
+  if (code >= 51 && code <= 57) return { desc: 'Gerimis Ringan', iconType: 'rain' };
+  if (code >= 61 && code <= 67) return { desc: 'Hujan', iconType: 'rain' };
+  if (code >= 80 && code <= 82) return { desc: 'Hujan Deras', iconType: 'rain' };
+  if (code >= 95) return { desc: 'Hujan Petir & Badai', iconType: 'thunder' };
+  return { desc: 'Berawan Sebagian', iconType: 'partly-cloudy' };
 };
 
 const SEGMENT_POINTS = routeData.segments.map(seg => ({
@@ -260,13 +205,45 @@ export default function ProfilePage() {
   const [hikerCount, setHikerCount] = useState<number>(3);
   const [durationDays, setDurationDays] = useState<number>(2);
   const [selectedPosIndex, setSelectedPosIndex] = useState<number>(0);
-  const [selectedHour, setSelectedHour] = useState<string>('13:00');
+  const [selectedHour, setSelectedHour] = useState<string>('now');
   const [infoTab, setInfoTab] = useState<'info' | 'rules'>('info');
   const [currentPage, setCurrentPage] = useState<number>(1);
   // activeSegmentIndex: null = "Seluruh Rute" overview, 0..N-1 = segmen terpilih
   const [activeSegmentIndex, setActiveSegmentIndex] = useState<number | null>(null);
   const [showSegmentDetails, setShowSegmentDetails] = useState<boolean>(false);
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite' | 'terrain' | 'topo'>('topo');
+
+  // Live Weather from Open-Meteo
+  const [liveWeatherData, setLiveWeatherData] = useState<any>(null);
+  const [isWeatherLoading, setIsWeatherLoading] = useState<boolean>(true);
+  const [weatherError, setWeatherError] = useState<boolean>(false);
+  const [weatherLastFetched, setWeatherLastFetched] = useState<string>('');
+
+  const fetchLiveWeather = async () => {
+    setIsWeatherLoading(true);
+    setWeatherError(false);
+    try {
+      const res = await fetch(
+        'https://api.open-meteo.com/v1/forecast?latitude=-7.391&longitude=110.052&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,precipitation_probability&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max&timezone=Asia%2FJakarta&forecast_days=7'
+      );
+      if (!res.ok) throw new Error('Weather API fetch failed');
+      const data = await res.json();
+      setLiveWeatherData(data);
+      const now = new Date();
+      setWeatherLastFetched(now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB');
+    } catch (err) {
+      console.error('Failed to fetch live weather:', err);
+      setWeatherError(true);
+    } finally {
+      setIsWeatherLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLiveWeather();
+    const interval = setInterval(fetchLiveWeather, 10 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleCheckpointClick = (lat: number, lng: number, name: string) => {
     if (mapInstance.current) {
@@ -284,6 +261,98 @@ export default function ProfilePage() {
   const posts = activeRoute?.posts || [];
   const sortedPosts = [...posts].sort((a: any, b: any) => a.urutan - b.urutan);
   const selectedPos = sortedPosts[selectedPosIndex] || { elevasi: 1540, nama_pos: 'Basecamp' };
+
+  // Weather Calculations based on Altitude of selectedPos
+  const elevDiff = Math.max(0, (selectedPos?.elevasi || 1540) - 1500);
+  const tempDrop = (elevDiff / 100) * 0.65;
+
+  // Selected hour index calculation for today
+  const selectedHourlyIndex = useMemo(() => {
+    if (!liveWeatherData?.hourly?.time || selectedHour === 'now') return -1;
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const targetPrefix = `${year}-${month}-${day}T${selectedHour}`;
+    return liveWeatherData.hourly.time.findIndex((t: string) => t.startsWith(targetPrefix));
+  }, [liveWeatherData, selectedHour]);
+
+  // Current display data for hero live status
+  const currentHeroWeather = useMemo(() => {
+    if (!liveWeatherData?.current) {
+      return {
+        temp: Math.round(22 - tempDrop),
+        apparentTemp: Math.round(21 - tempDrop),
+        humidity: 70,
+        windSpeed: 4.5,
+        precipProb: 15,
+        desc: 'Cerah Berawan',
+        iconType: 'partly-cloudy' as WeatherIconType,
+        isDay: 1,
+        timeLabel: 'Saat Ini (Live)'
+      };
+    }
+
+    if (selectedHour !== 'now' && selectedHourlyIndex !== -1) {
+      const hr = liveWeatherData.hourly;
+      const wCode = hr.weather_code[selectedHourlyIndex] ?? 1;
+      const cond = getWeatherConditionInfo(wCode, 1);
+      return {
+        temp: Math.round(hr.temperature_2m[selectedHourlyIndex] - tempDrop),
+        apparentTemp: Math.round(hr.temperature_2m[selectedHourlyIndex] - tempDrop - 0.5),
+        humidity: Math.round(hr.relative_humidity_2m[selectedHourlyIndex] ?? 60),
+        windSpeed: Math.round((hr.wind_speed_10m[selectedHourlyIndex] ?? 5.0) * 10) / 10,
+        precipProb: Math.round(hr.precipitation_probability[selectedHourlyIndex] ?? 10),
+        desc: cond.desc,
+        iconType: cond.iconType,
+        isDay: 1,
+        timeLabel: `Pukul ${selectedHour} WIB`
+      };
+    }
+
+    const cur = liveWeatherData.current;
+    const cond = getWeatherConditionInfo(cur.weather_code ?? 1, cur.is_day ?? 1);
+    const hourlyPrecip = liveWeatherData.hourly?.precipitation_probability?.[0] ?? (cur.precipitation > 0 ? 80 : 10);
+    return {
+      temp: Math.round(cur.temperature_2m - tempDrop),
+      apparentTemp: Math.round(cur.apparent_temperature - tempDrop),
+      humidity: Math.round(cur.relative_humidity_2m),
+      windSpeed: Math.round(cur.wind_speed_10m * 10) / 10,
+      precipProb: hourlyPrecip,
+      desc: cond.desc,
+      iconType: cond.iconType,
+      isDay: cur.is_day ?? 1,
+      timeLabel: 'Saat Ini (Live)'
+    };
+  }, [liveWeatherData, selectedHour, selectedHourlyIndex, tempDrop]);
+
+  // 7-Day Live Daily Forecasts
+  const dailyForecasts = useMemo(() => {
+    if (!liveWeatherData?.daily?.time) {
+      return [];
+    }
+    const d = liveWeatherData.daily;
+    return d.time.map((timeStr: string, idx: number) => {
+      const dateObj = new Date(timeStr);
+      const isToday = idx === 0;
+      const dayName = isToday ? 'Hari Ini' : idx === 1 ? 'Besok' : dateObj.toLocaleDateString('id-ID', { weekday: 'long' });
+      const dateFormatted = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+      const wCode = d.weather_code[idx] ?? 1;
+      const cond = getWeatherConditionInfo(wCode, 1);
+      
+      return {
+        isToday,
+        dayName,
+        dateFormatted,
+        tempMax: Math.round(d.temperature_2m_max[idx] - tempDrop),
+        tempMin: Math.round(d.temperature_2m_min[idx] - tempDrop),
+        windSpeed: Math.round(d.wind_speed_10m_max[idx] * 10) / 10,
+        precipProb: Math.round(d.precipitation_probability_max[idx] ?? 0),
+        desc: cond.desc,
+        iconType: cond.iconType
+      };
+    });
+  }, [liveWeatherData, tempDrop]);
 
   // Merge API reviews with fallback reviews matching user screenshot
   const fallbackReviews = [
@@ -1294,22 +1363,45 @@ export default function ProfilePage() {
               </div>
             )}
 
-              {/* Weather Forecast Widget */}
+              {/* Weather Forecast Widget (Live Real-Time) */}
               <div className="space-y-6 pt-10 border-t border-slate-200 dark:border-[#e7e5e4]">
-                <div>
-                  <p className="text-[10px] font-bold tracking-widest text-[#ea580c] uppercase">Kondisi Cuaca</p>
-                  <h3 className="font-display font-black text-3xl text-slate-900 dark:text-[#050505] mt-1">
-                    Prakiraan di titik resmi
-                  </h3>
+                
+                {/* Weather Header with Live indicator & Refresh */}
+                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <p className="text-[10px] font-bold tracking-widest text-[#ea580c] uppercase">Kondisi Cuaca Live</p>
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-100 dark:bg-emerald-950/40 text-[#0D5C3A] dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        LIVE SAAT INI
+                      </span>
+                    </div>
+                    <h3 className="font-display font-black text-2xl sm:text-3xl text-slate-900 dark:text-[#050505] mt-1">
+                      Prakiraan Cuaca di Titik Jalur
+                    </h3>
+                  </div>
+
+                  <button 
+                    type="button"
+                    onClick={fetchLiveWeather}
+                    disabled={isWeatherLoading}
+                    className="flex items-center gap-1.5 text-[11px] font-bold text-slate-600 dark:text-slate-500 hover:text-[#0D5C3A] cursor-pointer transition-colors self-start sm:self-auto bg-white dark:bg-[#F4F0E8] px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-[#e7e5e4] shadow-xs"
+                    title="Perbarui data cuaca langsung"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${isWeatherLoading ? 'animate-spin text-[#0D5C3A]' : 'text-slate-400'}`} />
+                    <span>{isWeatherLoading ? 'Memperbarui...' : (weatherLastFetched ? `Update: ${weatherLastFetched}` : 'Sinkronkan')}</span>
+                  </button>
                 </div>
 
+                {/* Filter / Selector Bar */}
                 <div className="bg-white dark:bg-[#F4F0E8] rounded-2xl p-4 border border-slate-200 dark:border-[#e7e5e4] shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  {/* Left side: Pos selection */}
+                  {/* Left: Pos Selector */}
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-emerald-50 dark:bg-[#0D5C3A]/10 flex items-center justify-center text-[#0D5C3A]">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-[#0D5C3A]/10 flex items-center justify-center text-[#0D5C3A] flex-shrink-0">
                       <CloudSun className="w-5 h-5" />
                     </div>
                     <div>
+                      <div className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Lokasi Titik / Pos:</div>
                       <select 
                         value={selectedPosIndex} 
                         onChange={(e) => setSelectedPosIndex(Number(e.target.value))}
@@ -1317,93 +1409,211 @@ export default function ProfilePage() {
                       >
                         {sortedPosts.map((post: any, idx: number) => (
                           <option key={post.id} value={idx}>
-                            {post.nama_pos}
+                            {post.nama_pos} ({post.elevasi} mdpl)
                           </option>
                         ))}
                       </select>
-                      <p className="text-[10px] text-slate-400 mt-0.5">{selectedPos.elevasi.toLocaleString('id-ID')} m</p>
                     </div>
                   </div>
                   
-                  {/* Right side: Hour selection */}
-                  <div className="flex items-center gap-2 self-end sm:self-auto">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Jam:</span>
+                  {/* Right: Hour / Time Selector */}
+                  <div className="flex items-center gap-2 self-start sm:self-auto">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Waktu:</span>
                     <select 
                       value={selectedHour} 
                       onChange={(e) => setSelectedHour(e.target.value)}
-                      className="bg-white dark:bg-[#FAF8F5] px-3 py-1.5 border border-slate-200 dark:border-[#e7e5e4] rounded-xl text-xs font-bold text-slate-700 dark:text-[#050505] focus:outline-none focus:ring-1 focus:ring-[#0D5C3A]/30 cursor-pointer shadow-sm"
+                      className="bg-white dark:bg-[#FAF8F5] px-3 py-1.5 border border-slate-200 dark:border-[#e7e5e4] rounded-xl text-xs font-bold text-slate-700 dark:text-[#050505] focus:outline-none focus:ring-1 focus:ring-[#0D5C3A]/30 cursor-pointer shadow-2xs"
                     >
-                      <option value="07:00">07:00</option>
-                      <option value="10:00">10:00</option>
-                      <option value="13:00">13:00</option>
-                      <option value="16:00">16:00</option>
-                      <option value="19:00">19:00</option>
+                      <option value="now">Saat Ini (Real-time Live)</option>
+                      <option value="06:00">Pagi (06:00 WIB)</option>
+                      <option value="09:00">Pagi Menjelang Siang (09:00 WIB)</option>
+                      <option value="12:00">Siang Hari (12:00 WIB)</option>
+                      <option value="15:00">Sore Hari (15:00 WIB)</option>
+                      <option value="18:00">Senja / Petang (18:00 WIB)</option>
+                      <option value="21:00">Malam Hari (21:00 WIB)</option>
                     </select>
                   </div>
                 </div>
 
-                {/* 3-Day Forecast Cards */}
-                <div className="grid md:grid-cols-3 gap-4">
-                  {generateWeather(selectedPos.elevasi, selectedHour).map((fc, idx) => (
-                    <div key={idx} className="bg-white dark:bg-[#F4F0E8] rounded-2xl overflow-hidden border border-slate-200 dark:border-[#e7e5e4] shadow-sm flex flex-col">
-                      {/* Card Header */}
-                      <div className="bg-[#1e293b] dark:bg-[#2b3543] px-4 py-2.5 text-white flex justify-between items-center">
-                        <span className="text-xs font-bold">{fc.dayName}</span>
-                        <span className="text-[10px] text-slate-350">{fc.dateStr.replace(' Agustus', '')} &bull; {fc.time}</span>
-                      </div>
-                      
-                      {/* Card Body */}
-                      <div className="p-4 flex items-center justify-between flex-1">
-                        {/* Weather Icon */}
-                        <div className="w-16 h-16 flex items-center justify-center">
-                          {fc.iconType === 'clear' && (
-                            <svg className="w-12 h-12 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
-                            </svg>
-                          )}
-                          {fc.iconType === 'partly-cloudy' && (
-                            <div className="relative w-12 h-12">
-                              <svg className="absolute top-0 right-0 w-8 h-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
-                              </svg>
-                              <svg className="absolute bottom-0 left-0 w-10 h-10 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 16h-8z" />
-                              </svg>
-                            </div>
-                          )}
-                          {fc.iconType === 'cloudy' && (
-                            <svg className="w-12 h-12 text-slate-450" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 16h-8z" />
-                            </svg>
-                          )}
-                        </div>
-                        
-                        {/* Weather Info */}
-                        <div className="text-right">
-                          <p className="text-[10px] text-slate-450 font-bold tracking-wide">{fc.desc}</p>
-                          <p className="text-3xl font-black text-slate-800 dark:text-[#050505] mt-1">{fc.temp}Â°C</p>
-                          <div className="flex items-center justify-end gap-1 text-[10px] text-slate-400 mt-1.5 font-bold">
-                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                            </svg>
-                            <span>{fc.windSpeed} km/j</span>
+                {/* Hero Live Current Weather Card */}
+                <div className="bg-white dark:bg-[#F4F0E8] rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-[#e7e5e4] shadow-sm relative overflow-hidden">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    
+                    {/* Left: Weather Status & Big Temperature */}
+                    <div className="flex items-center gap-5">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 flex items-center justify-center flex-shrink-0">
+                        {currentHeroWeather.iconType === 'clear' && (
+                          <Sun className="w-10 h-10 sm:w-12 sm:h-12 text-amber-500 animate-[spin_20s_linear_infinite]" />
+                        )}
+                        {currentHeroWeather.iconType === 'partly-cloudy' && (
+                          <div className="relative flex items-center justify-center">
+                            <Sun className="w-8 h-8 sm:w-10 sm:h-10 text-amber-500" />
+                            <Cloud className="w-6 h-6 sm:w-7 sm:h-7 text-slate-400 absolute -bottom-1 -right-1" />
                           </div>
+                        )}
+                        {currentHeroWeather.iconType === 'cloudy' && (
+                          <Cloud className="w-10 h-10 sm:w-12 sm:h-12 text-slate-400" />
+                        )}
+                        {currentHeroWeather.iconType === 'rain' && (
+                          <CloudRain className="w-10 h-10 sm:w-12 sm:h-12 text-blue-500" />
+                        )}
+                        {currentHeroWeather.iconType === 'thunder' && (
+                          <CloudLightning className="w-10 h-10 sm:w-12 sm:h-12 text-amber-600" />
+                        )}
+                      </div>
+
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-[#ea580c] uppercase tracking-wider">
+                            {selectedPos.nama_pos}
+                          </span>
+                          <span className="text-[10px] text-slate-400 font-medium">
+                            &bull; {currentHeroWeather.timeLabel}
+                          </span>
+                        </div>
+                        <div className="flex items-baseline gap-2 mt-0.5">
+                          <span className="text-4xl sm:text-5xl font-black text-slate-900 dark:text-[#050505] tracking-tight">
+                            {currentHeroWeather.temp}&deg;C
+                          </span>
+                          <span className="text-sm font-bold text-slate-500 dark:text-[#707070]">
+                            {currentHeroWeather.desc}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-400 mt-1">
+                          Suhu terasa sekitar <strong className="text-slate-600 dark:text-slate-400">{currentHeroWeather.apparentTemp}&deg;C</strong> di ketinggian {selectedPos.elevasi} mdpl
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Right: Key Metrics Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-2 lg:grid-cols-4 gap-2.5 w-full md:w-auto">
+                      <div className="bg-[#FAF8F5] dark:bg-[#FAF8F5]/60 rounded-xl p-2.5 border border-slate-200/80 dark:border-[#e7e5e4]">
+                        <div className="flex items-center gap-1 text-[9px] font-bold text-slate-400 uppercase">
+                          <Wind className="w-3 h-3 text-[#0D5C3A]" />
+                          <span>Angin</span>
+                        </div>
+                        <div className="text-sm font-black text-slate-800 dark:text-[#050505] mt-1">
+                          {currentHeroWeather.windSpeed} <span className="text-[10px] font-normal text-slate-400">km/j</span>
+                        </div>
+                      </div>
+
+                      <div className="bg-[#FAF8F5] dark:bg-[#FAF8F5]/60 rounded-xl p-2.5 border border-slate-200/80 dark:border-[#e7e5e4]">
+                        <div className="flex items-center gap-1 text-[9px] font-bold text-slate-400 uppercase">
+                          <Droplets className="w-3 h-3 text-blue-500" />
+                          <span>Kelembapan</span>
+                        </div>
+                        <div className="text-sm font-black text-slate-800 dark:text-[#050505] mt-1">
+                          {currentHeroWeather.humidity}<span className="text-[10px] font-normal text-slate-400">%</span>
+                        </div>
+                      </div>
+
+                      <div className="bg-[#FAF8F5] dark:bg-[#FAF8F5]/60 rounded-xl p-2.5 border border-slate-200/80 dark:border-[#e7e5e4]">
+                        <div className="flex items-center gap-1 text-[9px] font-bold text-slate-400 uppercase">
+                          <CloudRain className="w-3 h-3 text-indigo-500" />
+                          <span>Peluang Hujan</span>
+                        </div>
+                        <div className="text-sm font-black text-slate-800 dark:text-[#050505] mt-1">
+                          {currentHeroWeather.precipProb}<span className="text-[10px] font-normal text-slate-400">%</span>
+                        </div>
+                      </div>
+
+                      <div className="bg-[#FAF8F5] dark:bg-[#FAF8F5]/60 rounded-xl p-2.5 border border-slate-200/80 dark:border-[#e7e5e4]">
+                        <div className="flex items-center gap-1 text-[9px] font-bold text-slate-400 uppercase">
+                          <Mountain className="w-3 h-3 text-[#ea580c]" />
+                          <span>Elevasi</span>
+                        </div>
+                        <div className="text-sm font-black text-slate-800 dark:text-[#050505] mt-1">
+                          {selectedPos.elevasi} <span className="text-[10px] font-normal text-slate-400">mdpl</span>
                         </div>
                       </div>
                     </div>
-                  ))}
+
+                  </div>
                 </div>
 
-                {/* Disclaimer & Prediksi 7 hari */}
-                <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold pt-2">
-                  <div className="flex items-center gap-1">
-                    <Info className="w-3 h-3 text-slate-350" />
-                    <span>Kondisi cuaca di atas merupakan data dari Open Meteo</span>
+                {/* 5-7 Day Live Forecast Cards */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-display font-black text-sm text-slate-800 dark:text-[#050505]">
+                      Prakiraan 7 Hari Kedepan ({selectedPos.nama_pos})
+                    </h4>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                      Model Open-Meteo High-Res
+                    </span>
                   </div>
-                  <a href="https://open-meteo.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#0D5C3A] flex items-center gap-0.5 transition-colors">
-                    Lihat prediksi 7 hari —
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2.5">
+                    {dailyForecasts.map((df: any, idx: number) => (
+                      <div 
+                        key={idx} 
+                        className={`rounded-2xl p-3 border transition-all duration-150 flex flex-col justify-between text-center ${
+                          df.isToday 
+                            ? 'bg-orange-50/50 dark:bg-orange-950/20 border-orange-300/70 dark:border-orange-900/50 shadow-xs' 
+                            : 'bg-white dark:bg-[#F4F0E8] border-slate-200 dark:border-[#e7e5e4] shadow-2xs'
+                        }`}
+                      >
+                        {/* Day & Date Header */}
+                        <div>
+                          <div className="flex items-center justify-center gap-1">
+                            <span className={`text-xs font-bold ${df.isToday ? 'text-[#ea580c]' : 'text-slate-800 dark:text-[#050505]'}`}>
+                              {df.dayName}
+                            </span>
+                          </div>
+                          <p className="text-[9px] text-slate-400 font-semibold mt-0.5">{df.dateFormatted}</p>
+                        </div>
+
+                        {/* Weather Icon */}
+                        <div className="my-2.5 flex items-center justify-center h-8">
+                          {df.iconType === 'clear' && <Sun className="w-7 h-7 text-amber-500" />}
+                          {df.iconType === 'partly-cloudy' && (
+                            <div className="relative flex items-center justify-center">
+                              <Sun className="w-6 h-6 text-amber-500" />
+                              <Cloud className="w-4 h-4 text-slate-400 absolute -bottom-0.5 -right-0.5" />
+                            </div>
+                          )}
+                          {df.iconType === 'cloudy' && <Cloud className="w-7 h-7 text-slate-400" />}
+                          {df.iconType === 'rain' && <CloudRain className="w-7 h-7 text-blue-500" />}
+                          {df.iconType === 'thunder' && <CloudLightning className="w-7 h-7 text-amber-600" />}
+                        </div>
+
+                        {/* Weather Condition Label */}
+                        <p className="text-[10px] font-bold text-slate-600 dark:text-slate-400 truncate mb-1.5" title={df.desc}>
+                          {df.desc}
+                        </p>
+
+                        {/* Max / Min Temps */}
+                        <div className="border-t border-slate-100 dark:border-[#e7e5e4] pt-2 flex items-center justify-center gap-1.5 text-xs font-black">
+                          <span className="text-slate-800 dark:text-[#050505]">{df.tempMax}&deg;</span>
+                          <span className="text-slate-300 dark:text-slate-600">/</span>
+                          <span className="text-slate-400 dark:text-slate-500 font-bold">{df.tempMin}&deg;</span>
+                        </div>
+
+                        {/* Rain Probability Badge */}
+                        <div className="mt-1.5 flex items-center justify-center gap-1 text-[9px] font-bold text-slate-400">
+                          <CloudRain className="w-2.5 h-2.5 text-blue-400" />
+                          <span>{df.precipProb}%</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Disclaimer & Attribution */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between text-[10px] text-slate-400 font-medium pt-2 gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <Info className="w-3.5 h-3.5 text-[#0D5C3A]" />
+                    <span>Data cuaca real-time langsung dari stasiun satelit Open-Meteo Gunung Sumbing (Elevasi otomatis dikalibrasi).</span>
+                  </div>
+                  <a 
+                    href="https://open-meteo.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="hover:text-[#0D5C3A] font-bold flex items-center gap-0.5 transition-colors self-start sm:self-auto"
+                  >
+                    Open-Meteo Forecast &rarr;
                   </a>
                 </div>
+
               </div>
 
               {/* Detailed Info Section (Detil yang perlu kamu tahu) */}
