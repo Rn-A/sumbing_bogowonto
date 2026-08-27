@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchAllPublicData, submitReview } from '../../services/api';
-import HikingTrailMapApp from '../../components/trail/HikingTrailMapApp';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { 
@@ -886,9 +885,6 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen pt-[var(--header-height)] bg-[#FAF8F5] dark:bg-[#FAF8F5]">
-      {/* ===== INTERACTIVE HIKING TRAIL MAP APP ===== */}
-      <HikingTrailMapApp />
-
       {/* ===== MAIN CONTENT - MUNCAK.ID STYLE ===== */}
       <section className="section-padding">
         <div className="container-app max-w-6xl">
