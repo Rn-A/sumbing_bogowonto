@@ -564,20 +564,20 @@ export default function ProfilePage() {
           });
 
           // ══════════ LANDMARK MARKERS ══════════
-          // Add markers for all intermediate trail landmarks with elevation labels
+          // Add markers for all intermediate trail landmarks with GPX-precise coordinates
           const TRAIL_LANDMARKS = [
-            { name: 'Wisata Alam Tanggul Asri', elevation: 1682, lat: -7.399100, lng: 110.036800, icon: '📍' },
-            { name: 'Selamat Datang', elevation: 1750, lat: -7.398800, lng: 110.038000, icon: '📍' },
-            { name: 'Cemoro Pitu', elevation: 1900, lat: -7.397800, lng: 110.042000, icon: '🌲' },
-            { name: 'Hutan Rimba', elevation: 2085, lat: -7.396500, lng: 110.046500, icon: '🌳' },
-            { name: 'Ratan Tengah', elevation: 2479, lat: -7.393400, lng: 110.053000, icon: '📍' },
-            { name: 'Mata Air', elevation: 2598, lat: -7.391200, lng: 110.058000, icon: '💧', type: 'water' },
-            { name: 'Watu Anak', elevation: 2669, lat: -7.390200, lng: 110.060000, icon: '🪨' },
-            { name: 'Sabana II', elevation: 2685, lat: -7.389800, lng: 110.061000, icon: '🏕️' },
-            { name: 'Watu Edeg', elevation: 2888, lat: -7.388100, lng: 110.065200, icon: '🪨' },
-            { name: 'Watu Putih', elevation: 2944, lat: -7.387200, lng: 110.067100, icon: '🪨' },
-            { name: 'Watu Lawang', elevation: 3279, lat: -7.385200, lng: 110.070200, icon: '🪨' },
-            { name: 'Puncak Bogowonto', elevation: 3271, lat: -7.384800, lng: 110.070800, icon: '⛰️', type: 'summit' },
+            { name: 'Wisata Alam Tanggul Asri', elevation: 1682, lat: -7.398950, lng: 110.041643, icon: '📍' },
+            { name: 'Selamat Datang', elevation: 1750, lat: -7.397541, lng: 110.043262, icon: '📍' },
+            { name: 'Cemoro Pitu', elevation: 1900, lat: -7.396108, lng: 110.046860, icon: '🌲' },
+            { name: 'Hutan Rimba', elevation: 2085, lat: -7.394589, lng: 110.051251, icon: '🌳' },
+            { name: 'Ratan Tengah', elevation: 2479, lat: -7.390499, lng: 110.059117, icon: '📍' },
+            { name: 'Mata Air', elevation: 2598, lat: -7.390539, lng: 110.061554, icon: '💧', type: 'water' },
+            { name: 'Watu Anak', elevation: 2669, lat: -7.389453, lng: 110.062191, icon: '🪨' },
+            { name: 'Sabana II', elevation: 2685, lat: -7.389366, lng: 110.062391, icon: '🏕️' },
+            { name: 'Watu Edeg', elevation: 2888, lat: -7.387355, lng: 110.065557, icon: '🪨' },
+            { name: 'Watu Putih', elevation: 2944, lat: -7.387191, lng: 110.066443, icon: '🪨' },
+            { name: 'Puncak Bogowonto', elevation: 3271, lat: -7.385200, lng: 110.071200, icon: '⛰️', type: 'summit' },
+            { name: 'Watu Lawang', elevation: 3279, lat: -7.385150, lng: 110.071500, icon: '🪨' },
           ];
 
           TRAIL_LANDMARKS.forEach((lm) => {
