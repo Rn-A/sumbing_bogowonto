@@ -563,6 +563,59 @@ export default function ProfilePage() {
               .addTo(map);
           });
 
+          // ══════════ LANDMARK MARKERS ══════════
+          // Add markers for all intermediate trail landmarks with elevation labels
+          const TRAIL_LANDMARKS = [
+            { name: 'Wisata Alam Tanggul Asri', elevation: 1682, lat: -7.399100, lng: 110.036800, icon: '📍' },
+            { name: 'Selamat Datang', elevation: 1750, lat: -7.398800, lng: 110.038000, icon: '📍' },
+            { name: 'Cemoro Pitu', elevation: 1900, lat: -7.397800, lng: 110.042000, icon: '🌲' },
+            { name: 'Hutan Rimba', elevation: 2085, lat: -7.396500, lng: 110.046500, icon: '🌳' },
+            { name: 'Ratan Tengah', elevation: 2479, lat: -7.393400, lng: 110.053000, icon: '📍' },
+            { name: 'Mata Air', elevation: 2598, lat: -7.391200, lng: 110.058000, icon: '💧', type: 'water' },
+            { name: 'Watu Anak', elevation: 2669, lat: -7.390200, lng: 110.060000, icon: '🪨' },
+            { name: 'Sabana II', elevation: 2685, lat: -7.389800, lng: 110.061000, icon: '🏕️' },
+            { name: 'Watu Edeg', elevation: 2888, lat: -7.388100, lng: 110.065200, icon: '🪨' },
+            { name: 'Watu Putih', elevation: 2944, lat: -7.387200, lng: 110.067100, icon: '🪨' },
+            { name: 'Watu Lawang', elevation: 3279, lat: -7.385200, lng: 110.070200, icon: '🪨' },
+            { name: 'Puncak Bogowonto', elevation: 3271, lat: -7.384800, lng: 110.070800, icon: '⛰️', type: 'summit' },
+          ];
+
+          TRAIL_LANDMARKS.forEach((lm) => {
+            const isWater = lm.type === 'water';
+            const isSummitLm = lm.type === 'summit';
+            const bgClass = isWater
+              ? 'bg-[#0891b2] border-[#67e8f9]'
+              : isSummitLm
+                ? 'bg-[#d97706] border-[#fcd34d]'
+                : 'bg-[#059669] border-[#6ee7b7]';
+
+            const lmEl = document.createElement('div');
+            lmEl.className = 'custom-maplibre-marker';
+            lmEl.innerHTML = `
+              <div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;">
+                <div class="w-5 h-5 rounded-full ${bgClass} border-[1.5px] text-white flex items-center justify-center shadow-md" style="font-size:10px;">
+                  ${lm.icon}
+                </div>
+                <div style="margin-top:1px;padding:0 4px;border-radius:5px;background:rgba(15,23,42,0.88);color:#e2e8f0;font-size:8px;font-weight:700;font-family:system-ui;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,0.3);text-align:center;line-height:1.3;">
+                  <span style="display:block;font-size:7px;color:#94a3b8;">${lm.name}</span>
+                  <span style="color:#fde68a;font-weight:800;">${lm.elevation.toLocaleString('id-ID')} m</span>
+                </div>
+              </div>
+            `;
+
+            const lmPopup = new maplibregl.Popup({ offset: 20 }).setHTML(`
+              <div class="p-1.5 font-sans text-slate-800">
+                <p class="font-bold text-xs m-0">${lm.icon} ${lm.name}</p>
+                <p class="text-[10px] text-slate-500 m-0.5">Ketinggian: ${lm.elevation.toLocaleString('id-ID')} mdpl</p>
+              </div>
+            `);
+
+            new maplibregl.Marker({ element: lmEl })
+              .setLngLat([lm.lng, lm.lat])
+              .setPopup(lmPopup)
+              .addTo(map);
+          });
+
           // Draw full polyline with trail styling (orange base + white dashed line)
           if (routeCoordinates.length > 1) {
             map.addSource('route', {
