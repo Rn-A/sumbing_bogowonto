@@ -7,12 +7,14 @@ import { fileURLToPath } from 'url';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
+// @ts-ignore
 import midtransClient from 'midtrans-client';
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = process.env.VERCEL
+  ? process.cwd()
+  : path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 const prisma = new PrismaClient();
@@ -1647,8 +1649,10 @@ if (process.env.NODE_ENV === 'production') {
 // ============================================
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🏔️ Basecamp Sumbing API running on http://localhost:${PORT}`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`🏔️ Basecamp Sumbing API running on http://localhost:${PORT}`);
+  });
+}
 
 export default app;
