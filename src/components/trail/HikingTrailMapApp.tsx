@@ -596,49 +596,6 @@ export default function HikingTrailMapApp() {
           </div>
         </div>
 
-        {/* Section: CHECKPOINT & POS PENDAKIAN Grid */}
-        <div className="pt-1 space-y-2">
-          <h4 className="text-[10px] font-extrabold text-slate-400 dark:text-emerald-300 uppercase tracking-widest">
-            CHECKPOINT & POS PENDAKIAN
-          </h4>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-            {CHECKPOINTS.map((cp) => {
-              const isSelected = selectedCheckpoint.id === cp.id;
-              const dotBg = cp.type === 'basecamp' 
-                ? 'bg-emerald-600' 
-                : cp.type === 'summit' 
-                  ? 'bg-slate-900 dark:bg-slate-100' 
-                  : 'bg-orange-600';
-
-              return (
-                <div
-                  key={cp.id}
-                  onClick={() => handleSelectCheckpoint(cp)}
-                  className={`cursor-pointer p-2 sm:p-2.5 rounded-lg border transition-all duration-150 flex items-center justify-between ${
-                    isSelected 
-                      ? 'bg-white dark:bg-emerald-950 border-[#0D5C3A] ring-1 ring-[#0D5C3A]/20 shadow-xs' 
-                      : 'bg-[#FAF8F5] dark:bg-emerald-950/40 border-slate-200/80 dark:border-emerald-800/60 hover:border-emerald-500 shadow-2xs'
-                  }`}
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${dotBg}`}></span>
-                    <div className="truncate">
-                      <h5 className="text-[11px] font-bold text-slate-800 dark:text-white truncate">
-                        {cp.name} <span className="text-slate-500 dark:text-emerald-300 font-normal">({cp.elevation} m)</span>
-                      </h5>
-                    </div>
-                  </div>
-
-                  <span className="text-[10px] font-semibold text-slate-400 dark:text-emerald-300 shrink-0 ml-1.5">
-                    {cp.distance} km
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
       </div>
     </div>
   );
