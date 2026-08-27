@@ -992,32 +992,6 @@ export default function ProfilePage() {
                       title="Peta Rute Interaktif"
                     />
                   </div>
-
-                  {/* Segmentasi Pos ke Pos (Overview Timeline) */}
-                  {activeRoute.posts && activeRoute.posts.length > 0 && (
-                    <div className="pt-6">
-                      <h3 className="font-display font-black text-xl text-slate-900 dark:text-[#050505] mb-6 flex items-center gap-2">
-                        <Navigation className="w-5 h-5 text-[#0D5C3A]" />
-                        Detail Rute (Pos ke Pos)
-                      </h3>
-                      <div className="relative border-l-2 border-[#0D5C3A]/20 dark:border-[#0D5C3A]/30 ml-4 space-y-6">
-                        {[...activeRoute.posts]
-                          .sort((a: any, b: any) => a.urutan - b.urutan)
-                          .map((post: any, i: number) => (
-                            <div key={post.id} className="relative pl-6">
-                              <div className="absolute left-[-9px] top-1.5 w-4 h-4 rounded-full bg-[#0D5C3A] border-2 border-[#FAF8F5] flex items-center justify-center">
-                              </div>
-                              <h4 className="font-display font-bold text-sm text-slate-800 dark:text-[#050505]">
-                                {post.nama_pos} <span className="text-[10px] font-normal text-slate-400 ml-2">({post.elevasi} mdpl)</span>
-                              </h4>
-                              <p className="text-xs text-slate-650 dark:text-[#707070] mt-1.5 leading-relaxed">
-                                {post.deskripsi || 'Rute terus menanjak dan vegetasi mulai berubah sesuai ketinggian.'}
-                              </p>
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-                  )}
                 </>
               ) : (
                 /* ===== ROUTE SEGMENTATION DASHBOARD (Rewritten) ===== */
