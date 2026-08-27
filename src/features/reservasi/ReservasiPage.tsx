@@ -56,7 +56,7 @@ export default function ReservasiPage() {
   const [selectedRouteId, setSelectedRouteId] = useState('');
   const [selectedPackageId, setSelectedPackageId] = useState('');
   const [hikerCount, setHikerCount] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState<'QRIS' | 'VA_BCA' | 'VA_BRI' | 'VA_MANDIRI' | 'CASH'>('QRIS');
+  const [paymentMethod, setPaymentMethod] = useState<'QRIS' | 'VA_BCA' | 'VA_BRI' | 'VA_MANDIRI' | 'CASH'>('CASH');
   const [catatan, setCatatan] = useState('');
   const [agreedSOP, setAgreedSOP] = useState(false);
 
@@ -75,7 +75,7 @@ export default function ReservasiPage() {
   // Payment Modal & QRIS / VA State
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [activePaymentBooking, setActivePaymentBooking] = useState<any>(null);
-  const [paymentModalTab, setPaymentModalTab] = useState<'qris' | 'va' | 'cash'>('qris');
+  const [paymentModalTab, setPaymentModalTab] = useState<'qris' | 'va' | 'cash'>('cash');
   const [selectedVaBank, setSelectedVaBank] = useState<'BCA' | 'BRI' | 'MANDIRI'>('BCA');
   const [isSimulatingPayment, setIsSimulatingPayment] = useState(false);
   const [vaCopied, setVaCopied] = useState(false);
@@ -779,8 +779,17 @@ export default function ReservasiPage() {
 
                       {/* Payment Options */}
                       <div className="space-y-3">
-                        <label className="text-xs font-black text-[#050505] block">Metode Pembayaran:</label>
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs font-black text-[#050505] block">Metode Pembayaran:</label>
+                          <span className="text-[10px] font-bold text-[#0D5C3A] bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                            Bayar di Tempat (Loket)
+                          </span>
+                        </div>
 
+                        {/* ======================================================== */}
+                        {/* ONLINE PAYMENT METHODS (QRIS & VA) - TEMPORARILY COMMENTED */}
+                        {/* ======================================================== */}
+                        {/* 
                         {/* QRIS Option */}
                         <div 
                           onClick={() => setPaymentMethod('QRIS')}
@@ -822,26 +831,32 @@ export default function ReservasiPage() {
                           </div>
                           <input type="radio" checked={paymentMethod === 'VA_BCA'} readOnly className="text-[#0D5C3A]" />
                         </div>
+                        */}
 
-                        {/* Cash on Basecamp Option */}
+                        {/* Cash on Basecamp Option (Active On-Site Payment) */}
                         <div 
                           onClick={() => setPaymentMethod('CASH')}
                           className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${
                             paymentMethod === 'CASH'
-                              ? 'border-[#0D5C3A] bg-emerald-50/50 shadow-2xs'
+                              ? 'border-[#0D5C3A] bg-emerald-50/50 shadow-2xs ring-1 ring-[#0D5C3A]/20'
                               : 'border-[#e7e5e4] bg-[#FAF8F5]'
                           }`}
                         >
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-800 flex items-center justify-center font-black text-xs">
-                              CASH
+                            <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-900 border border-amber-300/60 flex items-center justify-center font-black text-xs">
+                              LOKET
                             </div>
                             <div>
-                              <p className="text-xs font-black text-[#050505]">Bayar Tunai di Loket Basecamp</p>
-                              <p className="text-[10px] text-[#707070]">Tunjukkan kode booking saat check-in di pos registrasi</p>
+                              <p className="text-xs font-black text-[#050505]">Bayar di Tempat (Tunai / Loket Basecamp)</p>
+                              <p className="text-[10px] text-[#707070]">Tunjukkan kode booking saat check-in di pos registrasi Basecamp Bogowonto</p>
                             </div>
                           </div>
-                          <input type="radio" checked={paymentMethod === 'CASH'} readOnly className="text-[#0D5C3A]" />
+                          <input type="radio" checked={paymentMethod === 'CASH'} readOnly className="text-[#0D5C3A] w-4 h-4 accent-[#0D5C3A]" />
+                        </div>
+
+                        <div className="p-3 bg-amber-50/70 border border-amber-200/80 rounded-xl text-[11px] text-amber-900 leading-relaxed flex items-start gap-2">
+                          <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                          <span>Saat ini reservasi melayani metode <strong>Bayar di Tempat (Loket Basecamp)</strong> saat pendaki tiba untuk registrasi dan verifikasi identitas.</span>
                         </div>
                       </div>
 
@@ -1016,8 +1031,8 @@ export default function ReservasiPage() {
                           <QrCode className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="text-xs font-black text-[#050505]">Pembayaran Belum Selesai ({searchedBooking.status})</p>
-                          <p className="text-[11px] text-[#707070]">Silakan scan QRIS atau gunakan nomor Virtual Account untuk menyelesaikan pembayaran.</p>
+                          <p className="text-xs font-black text-[#050505]">Menunggu Pembayaran di Loket ({searchedBooking.status})</p>
+                          <p className="text-[11px] text-[#707070]">Silakan selesaikan pembayaran tunai di loket registrasi Basecamp Bogowonto saat tiba.</p>
                         </div>
                       </div>
                       <button
@@ -1025,7 +1040,7 @@ export default function ReservasiPage() {
                         className="px-5 py-2.5 bg-[#0D5C3A] hover:bg-[#064e3b] text-white text-xs font-black rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-md shrink-0"
                       >
                         <CreditCard className="w-4 h-4" />
-                        <span>Buka QRIS & Virtual Account</span>
+                        <span>Petunjuk Pembayaran Loket</span>
                       </button>
                     </div>
                   )}
@@ -1421,48 +1436,62 @@ export default function ReservasiPage() {
                 </div>
               </div>
 
-              {/* Tab Switcher: QRIS vs VA vs Cash */}
-              <div className="p-3 bg-[#FAF8F5] border-b border-[#e7e5e4] grid grid-cols-3 gap-1.5">
-                <button
-                  onClick={() => setPaymentModalTab('qris')}
-                  className={`py-2 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                    paymentModalTab === 'qris'
-                      ? 'bg-[#0D5C3A] text-white shadow-xs'
-                      : 'bg-white text-[#707070] hover:text-[#050505]'
-                  }`}
-                >
-                  <QrCode className="w-3.5 h-3.5" />
-                  <span>Scan QRIS</span>
-                </button>
+              {/* Tab Switcher: QRIS vs VA vs Cash (QRIS & VA temporarily commented out) */}
+              <div className="p-3 bg-[#FAF8F5] border-b border-[#e7e5e4]">
+                {/* 
+                <div className="grid grid-cols-3 gap-1.5 mb-2">
+                  <button
+                    onClick={() => setPaymentModalTab('qris')}
+                    className={`py-2 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                      paymentModalTab === 'qris'
+                        ? 'bg-[#0D5C3A] text-white shadow-xs'
+                        : 'bg-white text-[#707070] hover:text-[#050505]'
+                    }`}
+                  >
+                    <QrCode className="w-3.5 h-3.5" />
+                    <span>Scan QRIS</span>
+                  </button>
 
-                <button
-                  onClick={() => setPaymentModalTab('va')}
-                  className={`py-2 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                    paymentModalTab === 'va'
-                      ? 'bg-[#0D5C3A] text-white shadow-xs'
-                      : 'bg-white text-[#707070] hover:text-[#050505]'
-                  }`}
-                >
-                  <Building2 className="w-3.5 h-3.5" />
-                  <span>Virtual Account</span>
-                </button>
+                  <button
+                    onClick={() => setPaymentModalTab('va')}
+                    className={`py-2 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                      paymentModalTab === 'va'
+                        ? 'bg-[#0D5C3A] text-white shadow-xs'
+                        : 'bg-white text-[#707070] hover:text-[#050505]'
+                    }`}
+                  >
+                    <Building2 className="w-3.5 h-3.5" />
+                    <span>Virtual Account</span>
+                  </button>
 
-                <button
-                  onClick={() => setPaymentModalTab('cash')}
-                  className={`py-2 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                    paymentModalTab === 'cash'
-                      ? 'bg-[#0D5C3A] text-white shadow-xs'
-                      : 'bg-white text-[#707070] hover:text-[#050505]'
-                  }`}
-                >
-                  <CreditCard className="w-3.5 h-3.5" />
-                  <span>Tunai (Loket)</span>
-                </button>
+                  <button
+                    onClick={() => setPaymentModalTab('cash')}
+                    className={`py-2 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                      paymentModalTab === 'cash'
+                        ? 'bg-[#0D5C3A] text-white shadow-xs'
+                        : 'bg-white text-[#707070] hover:text-[#050505]'
+                    }`}
+                  >
+                    <CreditCard className="w-3.5 h-3.5" />
+                    <span>Tunai (Loket)</span>
+                  </button>
+                </div>
+                */}
+                <div className="flex items-center justify-between px-2 py-1">
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="w-4 h-4 text-[#0D5C3A]" />
+                    <span className="text-xs font-black text-[#050505]">Metode Pembayaran: Bayar di Tempat (Loket Basecamp)</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
+                    Aktif
+                  </span>
+                </div>
               </div>
 
               {/* Tab Body */}
               <div className="p-6 space-y-6">
                 
+                {/* 
                 {/* 1. QRIS TAB */}
                 {paymentModalTab === 'qris' && (
                   <div className="space-y-4 text-center">
@@ -1567,25 +1596,24 @@ export default function ReservasiPage() {
                     </button>
                   </div>
                 )}
+                */}
 
-                {/* 3. CASH TAB */}
-                {paymentModalTab === 'cash' && (
-                  <div className="space-y-4 text-center">
-                    <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs text-left space-y-2">
-                      <p className="font-black">Petunjuk Pembayaran Tunai di Loket Basecamp:</p>
-                      <p>1. Tunjukkan Kode Booking <strong>{activePaymentBooking.kode_booking}</strong> saat tiba di Pos Registrasi Basecamp Bogowonto Pencar.</p>
-                      <p>2. Lakukan pembayaran sebesar <strong>Rp {(activePaymentBooking.total_harga || 35000).toLocaleString('id-ID')}</strong> kepada petugas loket.</p>
-                      <p>3. Petugas loket akan mengonfirmasi pembayaran Anda untuk mengaktifkan E-Tiket SIMAKSI.</p>
-                    </div>
-
-                    <button
-                      onClick={() => setPaymentModalOpen(false)}
-                      className="w-full py-3 bg-[#050505] text-white text-xs font-black rounded-xl uppercase tracking-wider hover:bg-slate-800 transition-all cursor-pointer"
-                    >
-                      Tutup & Lihat Tiket
-                    </button>
+                {/* 3. CASH TAB (ACTIVE ON-SITE PAYMENT) */}
+                <div className="space-y-4 text-center">
+                  <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs text-left space-y-2.5">
+                    <p className="font-black text-sm text-[#050505]">Petunjuk Pembayaran di Loket Basecamp:</p>
+                    <p>1. Tunjukkan Kode Booking <strong className="font-mono text-emerald-800 font-black">{activePaymentBooking.kode_booking}</strong> saat tiba di Pos Registrasi Basecamp Bogowonto Pencar.</p>
+                    <p>2. Lakukan pembayaran tunai sebesar <strong className="text-[#0D5C3A] font-black text-sm">Rp {(activePaymentBooking.total_harga || 35000).toLocaleString('id-ID')}</strong> kepada petugas loket.</p>
+                    <p>3. Petugas loket akan melakukan scan/verifikasi kode booking untuk mengaktifkan status E-Tiket SIMAKSI Anda.</p>
                   </div>
-                )}
+
+                  <button
+                    onClick={() => setPaymentModalOpen(false)}
+                    className="w-full py-3 bg-[#0D5C3A] hover:bg-[#064e3b] text-white text-xs font-black rounded-xl uppercase tracking-wider transition-all cursor-pointer shadow-md"
+                  >
+                    Tutup & Lihat Tiket
+                  </button>
+                </div>
 
               </div>
             </motion.div>

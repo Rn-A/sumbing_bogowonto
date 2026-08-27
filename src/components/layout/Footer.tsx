@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { 
+import {
   Mountain, MapPin, Phone, Mail, Clock,
   Facebook, Instagram, Youtube, Twitter,
   ChevronRight, Heart
@@ -43,11 +43,11 @@ export default function Footer() {
     <footer className="bg-[#0c0a09] dark:bg-[#0c0a09] text-slate-300 border-t border-[#262626] relative overflow-hidden">
       {/* Mountain silhouette decoration */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#0D5C3A] via-emerald-500 to-[#0D5C3A]" />
-      
+
       {/* Main Footer Content */}
       <div className="container-app section-padding">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
-          
+
           {/* Column 1: Brand & Description */}
           <div className="lg:col-span-1">
             <Link to="/" className="flex items-center gap-2.5 mb-5 group">
@@ -64,7 +64,7 @@ export default function Footer() {
               </div>
             </Link>
             <p className="text-sm leading-relaxed text-slate-400 mb-6">
-              Portal digital resmi Basecamp Bogowonto — Pendakian Gunung Sumbing Via Pencar. 
+              Portal digital resmi Basecamp Bogowonto — Pendakian Gunung Sumbing Via Pencar.
               Informasi jalur, registrasi, galeri, dan layanan pendukung pendakian Anda.
             </p>
 
@@ -141,10 +141,10 @@ export default function Footer() {
                 <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <MapPin className="w-4 h-4 text-emerald-400" />
                 </div>
-                <a 
-                  href="https://maps.app.goo.gl/6LkFqT31VEttVeym6" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href="https://maps.app.goo.gl/6LkFqT31VEttVeym6"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-sm text-slate-300 hover:text-emerald-400 transition-colors leading-relaxed"
                 >
                   Pencar Atas, Kwadungan, Kec. Kalikajar, Kab. Wonosobo, Jawa Tengah 56372
@@ -189,7 +189,7 @@ export default function Footer() {
             © {currentYear} Basecamp Bogowonto — Sumbing Via Pencar. All rights reserved.
           </p>
           <p className="text-xs text-slate-400 flex items-center gap-1">
-            Made with <Heart className="w-3 h-3 text-red-500 fill-red-500" /> for Indonesian Hikers
+            Created by the 2026 UMP KKN Team
           </p>
         </div>
       </div>
