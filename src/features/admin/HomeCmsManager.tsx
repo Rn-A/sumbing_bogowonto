@@ -275,7 +275,7 @@ export default function HomeCmsManager() {
       )}
 
       {/* Sub-Tab Navigation Bar */}
-      <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-slate-200/60 dark:bg-slate-800/60 border border-slate-300 dark:border-slate-700">
+      <div className="flex overflow-x-auto no-scrollbar items-center gap-2 p-1.5 rounded-2xl bg-slate-200/60 dark:bg-slate-800/60 border border-slate-300 dark:border-slate-700 whitespace-nowrap">
         {[
           { id: 'hero', label: '1. Gambar & Judul Banner (Hero)', icon: ImageIcon },
           { id: 'about', label: '2. Riset Publik (Gambar Diatas)', icon: Layout },

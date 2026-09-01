@@ -175,7 +175,7 @@ export default function CatalogCmsManager() {
       )}
 
       {/* Sub-Tab Navigation */}
-      <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-slate-200/60 dark:bg-slate-800/60 border border-slate-300 dark:border-slate-700">
+      <div className="flex overflow-x-auto no-scrollbar items-center gap-2 p-1.5 rounded-2xl bg-slate-200/60 dark:bg-slate-800/60 border border-slate-300 dark:border-slate-700 whitespace-nowrap">
         {[
           { id: 'packages', label: '1. Paket Pendakian SIMAKSI', icon: Package },
           { id: 'sewa', label: '2. Sewa Peralatan Camping', icon: Tent },
